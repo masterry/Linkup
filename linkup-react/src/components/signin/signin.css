@@ -1,58 +1,77 @@
 .container {
-  background-color: #ffeef8;
-  border-radius: 10px;
+  background-color: #f8d1e0; /* Light pink background */
   padding: 20px;
-  max-width: 400px;
-  margin: 0 auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px; /* Adjusted border radius */
+  max-width: 400px; /* Match max width */
+  margin: auto; /* Center the container */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Added box shadow */
 }
 
 .header {
-  color: #d5006d;
-  text-align: center;
+  background-color: #f8d1e0; /* Light pink background */
+  padding: 20px;
+  border-radius: 10px; /* Adjusted border radius */
+  max-width: 400px; /* Match max width */
+  margin: auto; /* Center the container */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Added box shadow */
 }
 
 .form {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center the form elements */
+  width: 100%;
 }
 
 .inputContainer {
   margin-bottom: 15px;
-  width: 100%; /* Ensure it uses full width */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: flex; /* Use flexbox */
+  flex-direction: column; /* Arrange items in a column */
+  align-items: center; /* Center items horizontally */
 }
 
 .label {
   margin-bottom: 5px;
-  color: #d5006d;
+  color: #d1006b; /* Darker pink for labels */
 }
 
 .input {
-  width: 80%; /* Center input fields */
+  width: 80%; /* Set a width for input fields */
   padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #d5006d;
+  border: 1px solid #ff6f91; /* Light pink border */
+  border-radius: 5px; /* Slightly rounded input */
+  font-size: 16px; /* Font size */
+}
+
+.input:focus {
+  border-color: #ff6f91; /* Keep border color on focus */
   outline: none;
+  box-shadow: 0 0 5px rgba(255, 111, 145, 0.5); /* Add shadow on focus */
 }
 
 .button {
-  padding: 10px;
-  border-radius: 5px;
-  border: none;
-  background-color: #d5006d;
+  background-color: #ff6f91; /* Button color */
   color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-  transition: background-color 0.3s;
-  width: 80%; /* Center button */
+  width: 80%; /* Match button width with input fields */
+  margin: 0 auto; /* Center the button */
+  display: block; /* Ensure the button is treated as a block element */
+  margin-top: 10px; /* Space between buttons */
+}
+
+.button:hover {
+  background-color: #ff4e7b; /* Darker pink on hover */
 }
 
 .message {
   text-align: center;
-  color: #d5006d;
+  color: #d1006b; /* Message color */
   margin-top: 10px;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './signin.css';
 
 const SignIn = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -18,9 +20,11 @@ const SignIn = () => {
             });
 
             setMessage(response.data.message);
-            // You can also store the token if needed
             const token = response.data.token;
             console.log('Token:', token);
+
+            // Redirect to homepage on successful sign-in
+            navigate('/home'); // Adjust the path based on your homepage route
         } catch (error) {
             if (error.response) {
                 setMessage(error.response.data.message);
@@ -30,9 +34,13 @@ const SignIn = () => {
         }
     };
 
+    const handleSignUpClick = () => {
+        navigate('/signup');
+    };
+
     return (
         <div className="container">
-            <h2 className="header">Sign In</h2>
+            <h2 className="header">Welcome to Linkup</h2>
             <form onSubmit={handleSubmit} className="form">
                 <div className="inputContainer">
                     <label className="label">Email:</label>
@@ -57,6 +65,9 @@ const SignIn = () => {
                 <button type="submit" className="button">Sign In</button>
             </form>
             {message && <p className="message">{message}</p>}
+            <div className="buttonContainer">
+                <button onClick={handleSignUpClick} className="button">Sign Up</button>
+            </div>
         </div>
     );
 };
