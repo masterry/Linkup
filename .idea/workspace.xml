@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f7616126-f1ae-4d93-a733-222e3669216f" name="Changes" comment="" />
+    <list default="true" id="f7616126-f1ae-4d93-a733-222e3669216f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/Linkup.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Linkup.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/linkup-react/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/linkup-react/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/linkup-react/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/linkup-react/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/linkup-react/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/linkup-react/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,9 +22,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 4
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="2mHs9MeQ9yVlnQL8vvQ50yitRap" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -23,6 +32,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Python.app.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "last_opened_file_path": "/Users/terrykhoury/Documents/GitHub/Linkup"
