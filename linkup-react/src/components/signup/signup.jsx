@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './signup.css';
 
 const SignupForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,6 +18,7 @@ const SignupForm = () => {
                 password,
             });
             setMessage(response.data.message);
+            navigate('/createprofile'); // Redirect to createProfile page
         } catch (error) {
             if (error.response) {
                 setMessage(error.response.data.message);
@@ -27,30 +30,30 @@ const SignupForm = () => {
 
     return (
         <div className="signup-container">
-        <h2>Sign Up</h2>
-        <form onSubmit={handleSubmit}>
-            <div className="input-group">
-                <label>Email:</label>
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-            </div>
-            <div className="input-group">
-                <label>Password:</label>
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-            </div>
-            <button type="submit" className="signup-button">Sign Up</button>
-        </form>
-        {message && <p className="message">{message}</p>}
-    </div>
+            <h2>Sign Up</h2>
+            <form onSubmit={handleSubmit}>
+                <div className="input-group">
+                    <label>Email:</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
+                <div className="input-group">
+                    <label>Password:</label>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </div>
+                <button type="submit" className="signup-button">Sign Up</button>
+            </form>
+            {message && <p className="message">{message}</p>}
+        </div>
     );
 };
 
