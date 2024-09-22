@@ -26,11 +26,7 @@ const SignIn = () => {
             // Redirect to homepage on successful sign-in
             navigate('/home'); // Adjust the path based on your homepage route
         } catch (error) {
-            if (error.response) {
-                setMessage(error.response.data.message);
-            } else {
-                setMessage('An unexpected error occurred.');
-            }
+            console.error('Error during sign-in:', error.response ? error.response.data : error.message);
         }
     };
 

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom'; // Import useParams
 import './createProfile.css';
 
 const CreateProfile = () => {
+    const { userID } = useParams(); // Get userID from the URL
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
     const [gender, setGender] = useState('');
@@ -15,7 +17,7 @@ const CreateProfile = () => {
         e.preventDefault();
         
         try {
-            const response = await axios.post('http://127.0.0.1:5000/create-profile', {
+            const response = await axios.put(`http://127.0.0.1:5000/api/userprofile/${userID}`, { // Include userID in the URL
                 name,
                 age,
                 gender,
@@ -25,11 +27,7 @@ const CreateProfile = () => {
             });
             setMessage(response.data.message);
         } catch (error) {
-            if (error.response) {
-                setMessage(error.response.data.message);
-            } else {
-                setMessage('An unexpected error occurred.');
-            }
+            console.error('Error during create:', error.response ? error.response.data : error.message);
         }
     };
 

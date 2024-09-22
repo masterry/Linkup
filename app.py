@@ -4,6 +4,8 @@ import jwt
 import hashlib
 import sqlite3
 import datetime
+import uuid
+
 
 app = Flask(__name__)
 CORS(app)
@@ -25,7 +27,6 @@ def signup():
     email = data.get('email')
     password = data.get('password')
 
-
     if not email or not password:
         return jsonify({'message': 'Email and password are required'}), 400
 
@@ -33,18 +34,21 @@ def signup():
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
-    """Check if the email already exists"""
+    # Check if the email already exists
     user = cursor.fetchone()
     if user:
         conn.close()
         return jsonify({'message': 'Email already exists'}), 400
 
-    hashed_password = hash_password(password)   # Insert new user
+    hashed_password = hash_password(password)  # Insert new user
     cursor.execute("INSERT INTO users (email, password) VALUES (?, ?)", (email, hashed_password))
     conn.commit()
+
+    # Get the userID of the newly created user
+    userID = cursor.lastrowid  # This retrieves the last inserted row ID
     conn.close()
 
-    return jsonify({'message': 'Account created successfully'}), 201
+    return jsonify({'message': 'Account created successfully', 'userID': userID}), 201
 
 
 @app.route('/signin', methods=['POST'])
@@ -89,6 +93,86 @@ def protected():
         return jsonify({'message': 'Token has expired'}), 401
     except jwt.InvalidTokenError:
         return jsonify({'message': 'Invalid token'}), 401
+
+@app.route('/api/swipe', methods=['POST'])
+def swipe():
+    data = request.get_json()
+
+    user = data.get('user')
+    target_user = data.get('targetUser')
+    direction = data.get('direction')
+
+    # Input validation
+    if not user or not target_user or direction not in ['like', 'dislike']:
+        return jsonify({'message': 'Invalid input'}), 400
+
+    swipe_id = str(uuid.uuid4())
+
+    # Insert the swipe record into the database
+    conn = sqlite3.connect('linkup.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO swipe (swipeID, user, targetUser, direction)
+        VALUES (?, ?, ?, ?)
+    ''', (swipe_id, user, target_user, direction))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'swipeID': swipe_id, 'message': 'Swipe recorded'}), 201
+
+@app.route('/api/users/<userID>', methods=['GET'])
+def get_user(userID):
+    conn = get_db_connection()
+    user = conn.execute('SELECT * FROM user WHERE userID = ?', (userID,)).fetchone()
+    conn.close()
+
+    if user is None:
+        return jsonify({'error': 'User not found'}), 404
+
+    user_data = {
+        'userID': user['userID'],
+        'email': user['email'],
+        'name': user['name'],
+        'age': user['age'],
+        'gender': user['gender'],
+        'location': user['location'],
+        'bio': user['bio'],
+        'profilePicture': user['profilePicture'],
+        'preferencesID': user['preferencesID']
+    }
+    return jsonify(user_data)
+
+
+@app.route('/api/userprofile/<int:userID>', methods=['PUT'])
+def update_user(userID):
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "Invalid input"}), 400
+
+    name = data.get("name")
+    age = data.get("age")
+    gender = data.get("gender")
+    location = data.get("location")
+    bio = data.get("bio")
+    profilePicture = data.get("profilePicture")
+
+    if None in (name, age, gender, location, bio):
+        return jsonify({"error": "Missing data"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        UPDATE users 
+        SET name = ?, age = ?, gender = ?, location = ?, bio = ?, profilePicture = ? 
+        WHERE userID = ?
+    ''', (name, age, gender, location, bio, profilePicture, userID))
+
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Profile updated successfully"})
+
 
 
 if __name__ == '__main__':

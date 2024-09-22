@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './signup.css';
 
-const SignupForm = () => {
+const SignUp = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -11,20 +11,19 @@ const SignupForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         try {
             const response = await axios.post('http://127.0.0.1:5000/signup', {
                 email,
                 password,
             });
             setMessage(response.data.message);
-            navigate('/createprofile'); // Redirect to createProfile page
+
+            // Assuming the userID is returned in response.data.userID
+            const userID = response.data.userID;
+            navigate(`/createprofile/${userID}`); // Redirect to createProfile page with userID
         } catch (error) {
-            if (error.response) {
-                setMessage(error.response.data.message);
-            } else {
-                setMessage('An unexpected error occurred.');
-            }
+            console.error('Error during sign-up:', error.response ? error.response.data : error.message);
         }
     };
 
@@ -57,4 +56,4 @@ const SignupForm = () => {
     );
 };
 
-export default SignupForm;
+export default SignUp;
