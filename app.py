@@ -11,6 +11,24 @@ app = Flask(__name__)
 CORS(app)
 app.config['SECRET_KEY'] = 'your_secret_key'
 
+
+class User:
+    def __init__(self, userID, email, name, age, gender, location, preferences):
+        self.userID = userID
+        self.email = email
+        self.name = name
+        self.age = age
+        self.gender = gender
+        self.location = location
+        self.preferences = preferences
+        self.bio = ""
+        self.profilePicture = None
+
+    def generate_userID(self):
+        # Generate a unique user ID (you can customize this)
+        return str(uuid.uuid4())
+
+
 def get_db_connection():
     conn = sqlite3.connect('linkup.db')
     conn.row_factory = sqlite3.Row
@@ -46,9 +64,13 @@ def signup():
 
     # Get the userID of the newly created user
     userID = cursor.lastrowid  # This retrieves the last inserted row ID
+
+    # Create a User object
+    new_user = User(userID=userID, email=email, name="", age=None, gender="", location="", preferences=None)
+
     conn.close()
 
-    return jsonify({'message': 'Account created successfully', 'userID': userID}), 201
+    return jsonify({'message': 'Account created successfully', 'userID': new_user.userID}), 201
 
 
 @app.route('/signin', methods=['POST'])
@@ -94,6 +116,7 @@ def protected():
     except jwt.InvalidTokenError:
         return jsonify({'message': 'Invalid token'}), 401
 
+
 @app.route('/api/swipe', methods=['POST'])
 def swipe():
     data = request.get_json()
@@ -120,10 +143,11 @@ def swipe():
 
     return jsonify({'swipeID': swipe_id, 'message': 'Swipe recorded'}), 201
 
+
 @app.route('/api/users/<userID>', methods=['GET'])
 def get_user(userID):
     conn = get_db_connection()
-    user = conn.execute('SELECT * FROM user WHERE userID = ?', (userID,)).fetchone()
+    user = conn.execute('SELECT * FROM users WHERE userID = ?', (userID,)).fetchone()
     conn.close()
 
     if user is None:
@@ -153,7 +177,7 @@ def update_user(userID):
     name = data.get("name")
     age = data.get("age")
     gender = data.get("gender")
-    location = data.get("location")
+    location = data.get("country")
     bio = data.get("bio")
     profilePicture = data.get("profilePicture")
 
@@ -172,7 +196,6 @@ def update_user(userID):
     conn.commit()
     conn.close()
     return jsonify({"message": "Profile updated successfully"})
-
 
 
 if __name__ == '__main__':
