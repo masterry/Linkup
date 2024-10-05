@@ -5,25 +5,55 @@ import './HomePage.css';
 
 const HomePage = () => {
   const { userID } = useParams();
-  const [matches, setMatches] = useState([]);
+  const [match, setMatch] = useState(null); // State to hold a single match
   const [error, setError] = useState(null); // State to hold any errors
 
+  // Example current location coordinates (for testing)
+  const currentLocation = { lat: 34.052235, lon: -118.243683 }; // Replace with actual current location
+
   useEffect(() => {
-    const fetchMatches = async () => {
+    const fetchMatch = async () => {
       try {
         const response = await axios.get(`http://127.0.0.1:5000/api/matches/${userID}`);
         console.log("API Response:", response.data); // Log the response data
-        setMatches(response.data); // Assuming response.data is an array
+        if (response.data.length > 0) {
+          setMatch(response.data[0]); // Set the first match
+        }
       } catch (error) {
-        console.error("Error fetching matches:", error);
+        console.error("Error fetching match:", error);
         setError(error.message); // Store error message in state
       }
     };
 
     if (userID) {
-      fetchMatches();
+      fetchMatch();
     }
   }, [userID]);
+
+  const handleSwipeRight = () => {
+    console.log("Swiped Right on:", match.name);
+  };
+
+  const handleSwipeLeft = () => {
+    console.log("Swiped Left on:", match.name);
+  };
+
+  const getFormattedDistance = () => {
+    if (match) {
+      // Extract latitude and longitude from the location string
+      const [latStr, lonStr] = match.location.split(',');
+      const lat = parseFloat(latStr);
+      const lon = parseFloat(lonStr);
+
+      // Check if latitude and longitude are valid numbers
+      if (!isNaN(lat) && !isNaN(lon)) {
+        // Use the distance provided by the API response
+        const distance = match.distance; // Distance is in kilometers already
+        return `${Math.round(distance * 1000) / 1000} km away`; // Format to 3 decimal places
+      }
+    }
+    return "Distance unknown"; // Fallback message
+  };
 
   return (
     <div className="home-page">
@@ -34,19 +64,23 @@ const HomePage = () => {
       
       <main className="profile-cards">
         {error && <p className="error-message">Error: {error}</p>} {/* Display error message */}
-        {matches.length === 0 && !error && <p>Loading matches...</p>} {/* Loading state */}
-        {matches.map((match, index) => (
-          <div key={index} className="card">
+        {!match && !error && <p>Loading match...</p>} {/* Loading state */}
+        {match && (
+          <div className="card">
             {match.profilePicture ? (
               <img src={match.profilePicture} alt="Profile" />
             ) : (
               <p>No profile picture available</p>
             )}
             <h2>{match.name}</h2>
-            <p>{match.age}, {match.location}</p>
-            <button className="swipe-button">Swipe Right</button>
+            <p>{match.age} years old</p>
+            <p>{getFormattedDistance()}</p> {/* Display formatted distance */}
+            <div className="swipe-buttons">
+              <button className="swipe-button left" onClick={handleSwipeLeft}>Swipe Left</button>
+              <button className="swipe-button right" onClick={handleSwipeRight}>Swipe Right</button>
+            </div>
           </div>
-        ))}
+        )}
       </main>
       
       <footer className="footer">

@@ -31,11 +31,12 @@ body {
 }
 
 .card {
+  position: relative; /* Required for absolute positioning of buttons */
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   margin: 10px;
-  padding: 20px;
+  padding: 20px 20px 60px; /* Add bottom padding to accommodate buttons */
   text-align: left;
   width: 300px;
 }
@@ -45,13 +46,39 @@ body {
   width: 100%;
 }
 
+.swipe-buttons {
+  position: absolute; /* Position buttons absolutely within the card */
+  bottom: 20px; /* Position above the bottom */
+  width: calc(100% - 40px); /* Adjust width to fit within card */
+  display: flex;
+  justify-content: space-between; /* Space buttons apart */
+}
+
 .swipe-button {
-  background-color: #ff5864;
+  background-color: #ff5864; /* Light red for swipe left */
   color: white;
   border: none;
   padding: 10px;
   cursor: pointer;
   border-radius: 5px;
+  transition: background-color 0.3s;
+  width: 48%; /* Make buttons responsive */
+}
+
+.swipe-button.left {
+  background-color: #ff5864; /* Light red for swipe left */
+}
+
+.swipe-button.left:hover {
+  background-color: #d65f5f; /* Darker red on hover */
+}
+
+.swipe-button.right {
+  background-color: #ff5864; /* Light green for swipe right */
+}
+
+.swipe-button.right:hover {
+  background-color: #5fd65f; /* Darker green on hover */
 }
 
 .footer {
