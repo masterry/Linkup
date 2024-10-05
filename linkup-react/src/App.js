@@ -5,6 +5,7 @@ import SignUp from "./components/signup/signup";
 import SignIn from './components/signin/signin';
 import HomePage from './components/home/home';
 import CreateProfile from './components/createprofile/createProfile';
+import UserPreferencesForm from './components/UserPreferencesForm/UserPreferencesForm';
 
 function App() {
   return (
@@ -12,8 +13,9 @@ function App() {
       <Routes>
         <Route path="/" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/home" element={<HomePage />} />
+        <Route path="/home/:userID" element={<HomePage />} />
         <Route path="/createprofile/:userID" element={<CreateProfile />} />
+        <Route path="/userpreferences/:userID" element={<UserPreferencesForm />} />
       </Routes>
     </Router>
   );

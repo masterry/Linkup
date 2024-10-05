@@ -1,50 +1,91 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom'; // Import useParams
-import countryList from 'country-list'; // Import the country list
+import { useParams, useNavigate } from 'react-router-dom'; 
 import './createProfile.css';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'; 
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
 const CreateProfile = () => {
-    const { userID } = useParams(); // Get userID from the URL
+    const { userID } = useParams();
+    const navigate = useNavigate(); 
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
     const [gender, setGender] = useState('');
-    const [country, setCountry] = useState(''); // Change location to country
+    const [location, setLocation] = useState(null); // Start with null, no default location
     const [bio, setBio] = useState('');
     const [profilePicture, setProfilePicture] = useState('');
     const [message, setMessage] = useState('');
 
+    // Initialize Leaflet icon
+    useEffect(() => {
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+            iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+            iconUrl: require('leaflet/dist/images/marker-icon.png'),
+            shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+        });
+    }, []);
+
+    // Function to get user location
+    const getLocation = () => {
+        console.log("Attempting to get location..."); // Debug log
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    console.log(`Location retrieved: ${latitude}, ${longitude}`); // Debug log
+                    setLocation([latitude, longitude]);
+                },
+                (error) => {
+                    console.error("Error obtaining location:", error);
+                    alert("Unable to retrieve your location. Please ensure location services are enabled and try again.");
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    };
+
+    useEffect(() => {
+        getLocation(); // Call the function to get location
+    }, []);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+    
+        if (!location) {
+            alert("Please allow location access to create your profile."); // Alert if location is not set
+            return;
+        }
+    
         try {
             const response = await axios.put(`http://127.0.0.1:5000/api/userprofile/${userID}`, {
                 name,
                 age,
                 gender,
-                country, // Change location to country
+                location: JSON.stringify(location), // Convert location to a string
                 bio,
                 profilePicture,
             });
             setMessage(response.data.message);
+            navigate(`/userpreferences/${userID}`);
         } catch (error) {
             console.error('Error during create:', error.response ? error.response.data : error.message);
         }
     };
+    
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setProfilePicture(reader.result); // Store the data URL in the state
+                setProfilePicture(reader.result);
             };
-            reader.readAsDataURL(file); // Convert the file to a data URL
+            reader.readAsDataURL(file);
         }
     };
-
-    // Get the list of countries
-    const countries = countryList.getData();
 
     return (
         <div className="signup-container">
@@ -78,22 +119,29 @@ const CreateProfile = () => {
                     </select>
                 </div>
                 <div className="input-group">
-                    <label>Country:</label>
-                    <select value={country} onChange={(e) => setCountry(e.target.value)} required>
-                        <option value="">Select a country</option>
-                        {countries.map((country) => (
-                            <option key={country.code} value={country.name}>
-                                {country.name}
-                            </option>
-                        ))}
-                    </select>
+                    <label>Location:</label>
+                    {location ? (
+                        <MapContainer center={location} zoom={13} style={{ height: '300px', width: '100%' }}>
+                            <TileLayer
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            />
+                            <Marker position={location}>
+                                <Popup>
+                                    You are here!
+                                </Popup>
+                            </Marker>
+                        </MapContainer>
+                    ) : (
+                        <p>Getting your location...</p>
+                    )}
                 </div>
                 <div className="input-group">
                     <label>Bio:</label>
                     <textarea
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
-                        style={{ width: '80%', padding: '10px', border: '1px solid #ff6f91', borderRadius: '5px', fontSize: '16px' }} // Apply inline styles for textarea
+                        style={{ width: '80%', padding: '10px', border: '1px solid #ff6f91', borderRadius: '5px', fontSize: '16px' }}
                     />
                 </div>
                 <div className="input-group">
@@ -104,7 +152,7 @@ const CreateProfile = () => {
                         onChange={handleImageChange}
                     />
                 </div>
-                {profilePicture && <img src={profilePicture} alt="Profile Preview" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />} {/* Display preview of the uploaded image */}
+                {profilePicture && <img src={profilePicture} alt="Profile Preview" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />}
                 <button type="submit" className="signup-button">Create Profile</button>
             </form>
             {message && <p className="message">{message}</p>}

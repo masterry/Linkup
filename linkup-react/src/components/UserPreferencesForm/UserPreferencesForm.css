@@ -1,0 +1,75 @@
+.signup-container {
+  background-color: #f8d1e0; /* Light pink background */
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  margin: auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #ff6f91; /* Pink for the heading */
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  display: flex; /* Use flexbox */
+  flex-direction: column; /* Arrange items in a column */
+  align-items: center; /* Center items horizontally */
+}
+
+label {
+  margin-bottom: 5px;
+  color: #d1006b; /* Darker pink for labels */
+}
+
+input,
+select {
+  width: 100%; /* Set width to 100% to ensure all inputs are the same size */
+  padding: 10px;
+  border: 1px solid #ff6f91;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+input:focus,
+select:focus {
+  border-color: #ff6f91;
+  outline: none;
+  box-shadow: 0 0 5px rgba(255, 111, 145, 0.5);
+}
+
+.signup-button {
+  background-color: #ff6f91; /* Button color */
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 100%; /* Match button width with input fields */
+  margin: 0 auto; /* Center the button */
+  display: block; /* Ensure the button is treated as a block element */
+}
+
+.signup-button:hover {
+  background-color: #ff4e7b; /* Darker pink on hover */
+}
+
+.message {
+  text-align: center;
+  color: #d1006b; /* Message color */
+  margin-top: 10px;
+}
+
+.distance-container {
+  display: flex;
+  flex-direction: column; /* Stack label and input vertically */
+  align-items: center; /* Center items horizontally */
+}
+
+.distance-input {
+  width: 80px; /* Adjust this value as needed */
+  margin-top: 5px; /* Space between label and input */
+}

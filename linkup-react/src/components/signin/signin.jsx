@@ -22,9 +22,10 @@ const SignIn = () => {
             setMessage(response.data.message);
             const token = response.data.token;
             console.log('Token:', token);
+            const userID = response.data.userID;
 
             // Redirect to homepage on successful sign-in
-            navigate('/home'); // Adjust the path based on your homepage route
+            navigate(`/home/${userID}`); // Adjust the path based on your homepage route
         } catch (error) {
             console.error('Error during sign-in:', error.response ? error.response.data : error.message);
         }
