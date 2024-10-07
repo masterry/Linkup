@@ -1,14 +1,27 @@
+body {
+  display: flex; /* Use flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  background-image: url('/src/assets/images/linkup.jpg'); /* Path to your background image */
+  background-size: cover; /* Cover the entire page */
+  background-position: center; /* Center the background image */
+  background-repeat: no-repeat; /* Prevent the background from repeating */
+  margin: 0; /* Remove default margin */
+  height: 100vh; /* Full viewport height */
+}
+
 .container {
-  background-color: #f8d1e0; /* Light pink background */
+  background-color: rgba(248, 209, 224, 0.8); /* Light pink with some transparency */
   padding: 20px;
   border-radius: 10px; /* Adjusted border radius */
   max-width: 400px; /* Match max width */
-  margin: auto; /* Center the container */
+  width: 150%; /* Ensure it fits within the available width */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Added box shadow */
+  margin-top: -200px;
 }
 
 .header {
-  background-color: #f8d1e0; /* Light pink background */
+  background-color: rgba(248, 209, 224, 0.8); /* Light pink with some transparency */
   padding: 20px;
   border-radius: 10px; /* Adjusted border radius */
   max-width: 400px; /* Match max width */

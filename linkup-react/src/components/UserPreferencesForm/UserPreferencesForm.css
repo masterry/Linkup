@@ -1,10 +1,11 @@
 .signup-container {
-  background-color: #f8d1e0; /* Light pink background */
+  background-color: rgba(248, 209, 224, 0.8); /* Light pink with some transparency */
   padding: 20px;
-  border-radius: 10px;
-  max-width: 400px;
-  margin: auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px; /* Adjusted border radius */
+  max-width: 400px; /* Match max width */
+  width: 150%; /* Ensure it fits within the available width */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Added box shadow */
+  margin-top: -200px;
 }
 
 h2 {
