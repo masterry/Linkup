@@ -6,6 +6,7 @@ import SignIn from './components/signin/signin';
 import HomePage from './components/home/home';
 import CreateProfile from './components/createprofile/createProfile';
 import UserPreferencesForm from './components/UserPreferencesForm/UserPreferencesForm';
+import Messages from './components/messages/messages';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/home/:userID" element={<HomePage />} />
         <Route path="/createprofile/:userID" element={<CreateProfile />} />
         <Route path="/userpreferences/:userID" element={<UserPreferencesForm />} />
+        <Route path="/messages" element={<Messages />} />
       </Routes>
     </Router>
   );

@@ -6,6 +6,7 @@ import sqlite3
 import datetime
 import uuid
 from geopy.distance import geodesic
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -38,6 +39,60 @@ class Preferences:
         self.genderPreference = gender_preference
         self.distancePreference = distance_preference
 
+
+class Message:
+    def __init__(self, messageID, sender, recipient, content):
+        self.messageID = messageID
+        self.sender = sender
+        self.recipient = recipient
+        self.content = content
+        self.timestamp = datetime.datetime.now()
+
+
+class Swipe:
+    def __init__(self, user, target_user, direction):
+        self.user = user
+        self.target_user = target_user
+        self.direction = direction
+        self.swipeID = None  # This will be set after saving to the database
+
+    def save_to_db(self):
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            'INSERT INTO swipe (user, targetUser, direction) VALUES (?, ?, ?)',
+            (self.user, self.target_user, self.direction)
+        )
+        self.swipeID = cursor.lastrowid  # Get the last inserted ID
+        conn.commit()
+        conn.close()
+
+
+
+
+class Match:
+    def __init__(self, matchID, user1, user2):
+        self.matchID = matchID
+        self.user1 = user1
+        self.user2 = user2
+        self.timestamp = self.get_current_timestamp()
+
+    def get_current_timestamp(self):
+        return datetime.now()
+
+    def initiateChat(self):
+        return f"Chat initiated between {self.user1} and {self.user2}."
+
+class NotificationService:
+    def notify_user(self, userID, message):
+        # Logic to send a notification to the user
+        print(f"Notification sent to {userID}: {message}")
+
+    def notify_new_match(self, match):
+        message1 = f"You have a new match with {match.user2}!"
+        message2 = f"You have a new match with {match.user1}!"
+        self.notify_user(match.user1, message1)
+        self.notify_user(match.user2, message2)
 
 
 def get_db_connection():
@@ -154,19 +209,62 @@ def swipe():
     if not user or not target_user or direction not in ['like', 'dislike']:
         return jsonify({'message': 'Invalid input'}), 400
 
-    swipe_id = str(uuid.uuid4())
+    # Create a Swipe instance
+    swipe_instance = Swipe(user, target_user, direction)
 
-    # Insert the swipe record into the database
-    conn = sqlite3.connect('linkup.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO swipe (swipeID, user, targetUser, direction)
-        VALUES (?, ?, ?, ?)
-    ''', (swipe_id, user, target_user, direction))
-    conn.commit()
-    conn.close()
+    # Save the swipe record into the database
+    swipe_instance.save_to_db()
 
-    return jsonify({'swipeID': swipe_id, 'message': 'Swipe recorded'}), 201
+    return jsonify({'swipeID': swipe_instance.swipeID, 'message': 'Swipe recorded'}), 201
+
+
+@app.route('/api/swipes', methods=['POST'])
+def swipes():
+    data = request.get_json()
+
+    user = data.get('user')
+    target_user = data.get('targetUser')
+    direction = data.get('direction')
+
+    # Input validation
+    if not user or not target_user or direction not in ['like', 'dislike']:
+        return jsonify({'message': 'Invalid input'}), 400
+
+    # Create a Swipe instance
+    swipe_instance = Swipe(user, target_user, direction)
+
+    # Save the swipe record into the database
+    swipe_instance.save_to_db()
+
+    print(f"Swipe recorded: user={user}, target_user={target_user}, direction={direction}, swipeID={swipe_instance.swipeID}")
+
+    # Check for mutual 'like' to create a match
+    if direction == 'like':
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Check if targetUser has liked the user back
+        cursor.execute(
+            'SELECT * FROM swipe WHERE user = ? AND targetUser = ? AND direction = ?',
+            (target_user, user, 'like')
+        )
+
+        if cursor.fetchone():  # If there is a mutual 'like'
+            # Create a match in the match table
+            cursor.execute(
+                'INSERT INTO match (user1, user2) VALUES (?, ?)',
+                (user, target_user)
+            )
+            match_id = cursor.lastrowid
+            conn.commit()
+            conn.close()
+            return jsonify({'swipeID': swipe_instance.swipeID, 'matchID': match_id,
+                            'message': 'Swipe recorded and match created'}), 201
+
+        conn.close()
+
+    return jsonify({'swipeID': swipe_instance.swipeID, 'message': 'Swipe recorded'}), 201
+
 
 
 @app.route('/api/users/<userID>', methods=['GET'])
@@ -330,14 +428,20 @@ def get_matches(user_id):
     except ValueError as e:
         return jsonify({'error': 'Invalid location format for user'}), 400
 
-    # Fetch potential matches
+    # Fetch potential matches excluding swiped users
     conn = sqlite3.connect('linkup.db')
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT userID, name, profilePicture, location, age, gender 
-        FROM users 
-        WHERE userID != ?
-    ''', (user_id,))
+        SELECT u.userID, u.name, u.profilePicture, u.location, u.age, u.gender 
+        FROM users u
+        WHERE u.userID != ? 
+        AND u.userID NOT IN (
+            SELECT targetUser 
+            FROM swipe 
+            WHERE user = ?
+        )
+    ''', (user_id, user_id))
+
     potential_matches = cursor.fetchall()
     conn.close()
 
@@ -373,6 +477,134 @@ def get_matches(user_id):
                 })
 
     return jsonify(matches)
+
+
+@app.route('/update_location/<int:user_id>', methods=['POST'])
+def update_location(user_id):
+    data = request.get_json()
+    location = data.get('location')  # Get the location as a single string
+
+    # Check if location is provided
+    if not location:
+        return jsonify({"error": "Location data is required"}), 400
+
+    # Update SQLite database with new location
+    conn = sqlite3.connect('linkup.db')
+    cursor = conn.cursor()
+
+    # Assuming you have a 'users' table with 'userID' and 'location' columns
+    cursor.execute('UPDATE users SET location = ? WHERE userID = ?', (location, user_id))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"message": "Location updated successfully"}), 200
+
+
+
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    data = request.json
+    sender = data['sender']
+    recipient = data['recipient']
+    content = data['content']
+    timestamp = data.get('timestamp', None)  # Optional, if you want to allow client-side timestamps
+
+    if timestamp is None:
+        timestamp = datetime.now().isoformat()  # Generate current timestamp
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO messages (sender, recipient, content, timestamp) VALUES (?, ?, ?, ?)',
+                   (sender, recipient, content, timestamp))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'status': 'Message sent', 'timestamp': timestamp}), 201
+
+
+@app.route('/get_messages', methods=['GET'])
+def get_messages():
+    sender = request.args.get('sender')
+    recipient = request.args.get('recipient')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM messages WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?)',
+                   (sender, recipient, recipient, sender))
+    messages = cursor.fetchall()
+    conn.close()
+
+    # Convert messages to a list of dictionaries, including content instead of message
+    return jsonify([{
+        'sender': message['sender'],
+        'recipient': message['recipient'],
+        'content': message['content'],  # Adjusted from 'message' to 'content'
+        'timestamp': message['timestamp']
+    } for message in messages]), 200
+
+
+@app.route('/create_match', methods=['POST'])
+def create_match():
+    data = request.get_json()
+    user1 = data.get('user1')
+    user2 = data.get('user2')
+
+    if not user1 or not user2:
+        return jsonify({"error": "Missing user data"}), 400
+
+    # Automatically create a unique matchID
+    matchID = str(uuid.uuid4())
+
+    # Insert match into the database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO match (matchID, user1, user2) VALUES (?, ?, ?)",
+        (matchID, user1, user2)
+    )
+    conn.commit()
+    conn.close()
+
+    # Create Match instance and notify users
+    new_match = Match(matchID, user1, user2)
+    notification_service = NotificationService()
+    notification_service.notify_new_match(new_match)
+
+    return jsonify({"message": "Match created successfully", "match": str(new_match)}), 201
+
+
+@app.route('/new/chat', methods=['POST'])
+def new_chat():
+    data = request.json
+
+    # Validate input
+    if not all(key in data for key in ('sender', 'recipient', 'content')):
+        return jsonify({'error': 'Missing data'}), 400
+
+    sender = data['sender']
+    recipient = data['recipient']
+    content = data['content']
+
+    # Prepare timestamp
+    timestamp = datetime.now().isoformat()  # Use the imported datetime
+
+    # Insert into database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('INSERT INTO messages (sender, recipient, content, timestamp) VALUES (?, ?, ?, ?)',
+                   (sender, recipient, content, timestamp))
+    conn.commit()
+
+    # Get the last inserted message ID
+    messageID = cursor.lastrowid
+    conn.close()
+
+    return jsonify({'messageID': messageID, 'sender': sender, 'recipient': recipient, 'content': content,
+                    'timestamp': timestamp}), 201
+
+
 
 
 if __name__ == '__main__':

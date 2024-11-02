@@ -39,11 +39,22 @@ body {
   padding: 20px 20px 60px; /* Add bottom padding to accommodate buttons */
   text-align: left;
   width: 300px;
+  transition: transform 0.2s ease, opacity 0.2s ease; /* Adjust timing for quicker transitions */
 }
 
 .card img {
   border-radius: 10px;
   width: 100%;
+}
+
+.card.swipe-left {
+  transform: translateX(-100%); /* Move left */
+  opacity: 0; /* Fade out */
+}
+
+.card.swipe-right {
+  transform: translateX(100%); /* Move right */
+  opacity: 0; /* Fade out */
 }
 
 .swipe-buttons {
@@ -86,4 +97,21 @@ body {
   padding: 10px;
   background-color: #ff5864;
   color: white;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.popup button {
+  margin: 5px;
 }

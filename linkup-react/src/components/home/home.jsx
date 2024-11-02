@@ -1,26 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import './HomePage.css';
 
 const HomePage = () => {
   const { userID } = useParams();
-  const [matches, setMatches] = useState([]); // State to hold all matches
-  const [currentMatchIndex, setCurrentMatchIndex] = useState(0); // Index of the current match
-  const [error, setError] = useState(null); // State to hold any errors
-
-  // Example current location coordinates (for testing)
-  const currentLocation = { lat: 34.052235, lon: -118.243683 }; // Replace with actual current location
+  const navigate = useNavigate(); // Initialize useNavigate
+  const [matches, setMatches] = useState([]);
+  const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+  const [error, setError] = useState(null);
+  const [noMoreMatches, setNoMoreMatches] = useState(false);
+  const [swipeDirection, setSwipeDirection] = useState('');
+  const [matchPopup, setMatchPopup] = useState(false);
 
   useEffect(() => {
     const fetchMatches = async () => {
       try {
         const response = await axios.get(`http://127.0.0.1:5000/api/matches/${userID}`);
-        console.log("API Response:", response.data); // Log the response data
-        setMatches(response.data); // Set all matches
+        console.log("API Response:", response.data);
+        setMatches(response.data);
       } catch (error) {
         console.error("Error fetching matches:", error);
-        setError(error.message); // Store error message in state
+        setError(error.message);
       }
     };
 
@@ -29,42 +30,70 @@ const HomePage = () => {
     }
   }, [userID]);
 
-  const handleSwipeRight = () => {
-    console.log("Swiped Right on:", matches[currentMatchIndex].name);
-    // Move to the next match
-    if (currentMatchIndex < matches.length - 1) {
-      setCurrentMatchIndex(currentMatchIndex + 1);
-    } else {
-      console.log("No more matches available.");
+  const handleSwipe = async (direction) => {
+    if (matches.length === 0) return;
+
+    const targetUser = matches[currentMatchIndex].userID;
+
+    const payload = {
+      user: userID,
+      targetUser: targetUser,
+      direction: direction,
+    };
+
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/api/swipes', payload);
+      console.log(`Swiped ${direction} on:`, matches[currentMatchIndex].name);
+
+      if (response.data.matchID) {
+        setMatchPopup(true); // Show the popup if there is a match
+      }
+
+      setSwipeDirection(direction === 'like' ? 'swipe-right' : 'swipe-left');
+
+      setTimeout(() => {
+        setCurrentMatchIndex((prevIndex) => {
+          if (prevIndex < matches.length - 1) {
+            return prevIndex + 1;
+          } else {
+            setNoMoreMatches(true);
+            return prevIndex;
+          }
+        });
+        setSwipeDirection('');
+      }, 300);
+    } catch (error) {
+      console.error(`Error swiping ${direction}:`, error);
+      setError(error.message);
     }
   };
 
-  const handleSwipeLeft = () => {
-    console.log("Swiped Left on:", matches[currentMatchIndex].name);
-    // Move to the next match
-    if (currentMatchIndex < matches.length - 1) {
-      setCurrentMatchIndex(currentMatchIndex + 1);
-    } else {
-      console.log("No more matches available.");
-    }
-  };
+  const handleSwipeRight = () => handleSwipe('like');
+  const handleSwipeLeft = () => handleSwipe('dislike');
 
   const getFormattedDistance = () => {
     if (matches[currentMatchIndex]) {
       const match = matches[currentMatchIndex];
-      // Extract latitude and longitude from the location string
       const [latStr, lonStr] = match.location.split(',');
       const lat = parseFloat(latStr);
       const lon = parseFloat(lonStr);
 
-      // Check if latitude and longitude are valid numbers
       if (!isNaN(lat) && !isNaN(lon)) {
-        // Use the distance provided by the API response
-        const distance = match.distance; // Distance is in kilometers already
-        return `${Math.round(distance * 1000) / 1000} km away`; // Format to 3 decimal places
+        const distance = match.distance;
+        return `${Math.round(distance * 1000) / 1000} km away`;
       }
     }
-    return "Distance unknown"; // Fallback message
+    return "Distance unknown";
+  };
+
+  const startChat = () => {
+    const targetUser = matches[currentMatchIndex].userID; // Get the target user's ID
+    navigate(`/messages?sender=${userID}&recipient=${targetUser}`); // Redirect with parameters
+    setMatchPopup(false);
+  };
+
+  const keepSwiping = () => {
+    setMatchPopup(false);
   };
 
   return (
@@ -75,10 +104,11 @@ const HomePage = () => {
       </header>
       
       <main className="profile-cards">
-        {error && <p className="error-message">Error: {error}</p>} {/* Display error message */}
-        {matches.length === 0 && !error && <p>Loading matches...</p>} {/* Loading state */}
-        {matches.length > 0 && (
-          <div className="card">
+        {error && <p className="error-message">Error: {error}</p>} 
+        {noMoreMatches && <p>No more potential matches around you.</p>} 
+        {matches.length === 0 && !error && !noMoreMatches && <p>Loading matches...</p>} 
+        {matches.length > 0 && !noMoreMatches && (
+          <div className={`card ${swipeDirection}`}>
             {matches[currentMatchIndex].profilePicture ? (
               <img src={matches[currentMatchIndex].profilePicture} alt="Profile" />
             ) : (
@@ -86,7 +116,7 @@ const HomePage = () => {
             )}
             <h2>{matches[currentMatchIndex].name}</h2>
             <p>{matches[currentMatchIndex].age} years old</p>
-            <p>{getFormattedDistance()}</p> {/* Display formatted distance */}
+            <p>{getFormattedDistance()}</p> 
             <div className="swipe-buttons">
               <button className="swipe-button left" onClick={handleSwipeLeft}>Swipe Left</button>
               <button className="swipe-button right" onClick={handleSwipeRight}>Swipe Right</button>
@@ -94,6 +124,14 @@ const HomePage = () => {
           </div>
         )}
       </main>
+
+      {matchPopup && (
+        <div className="popup">
+          <h2>WOW! It's a match!</h2>
+          <button onClick={startChat}>Start Chat</button>
+          <button onClick={keepSwiping}>Keep Swiping</button>
+        </div>
+      )}
       
       <footer className="footer">
         <p>&copy; 2024 Linkup</p>
