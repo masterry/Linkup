@@ -1,0 +1,15 @@
+.profile-container {
+  background-color: rgba(248, 209, 224, 0.8); /* Light pink background */
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  margin: 20px auto; /* Center the profile */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center; /* Center text */
+}
+
+.profile-picture {
+  width: 100%; /* Make picture responsive */
+  height: auto;
+  border-radius: 50%; /* Circular profile picture */
+}

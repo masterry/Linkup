@@ -1,0 +1,35 @@
+nav {
+  background-color: rgba(248, 209, 224, 0.8);
+  padding: 20px;
+  width: 200px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+ul {
+  list-style: none; /* Remove default list styles */
+  padding: 0; /* Remove default padding */
+  margin: 0; /* Remove default margin */
+}
+
+li {
+  margin: 15px 0; /* Space between list items, adjusted for consistency */
+}
+
+a {
+  text-decoration: none;
+  color: #d1006b;
+  display: block;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+a:hover {
+  background-color: rgba(255, 111, 145, 0.3);
+  color: #d1006b; 
+}

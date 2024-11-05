@@ -6,7 +6,7 @@ import sqlite3
 import datetime
 import uuid
 from geopy.distance import geodesic
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 app = Flask(__name__)
@@ -150,7 +150,6 @@ def signup():
     return jsonify({'message': 'Account created successfully', 'userID': userID, 'preferencesID': preferencesID}), 201
 
 
-
 @app.route('/signin', methods=['POST'])
 def signin():
     data = request.json
@@ -162,25 +161,26 @@ def signin():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
-    user = cursor.fetchone()
-    conn.close()
+
+    try:
+        cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
+        user = cursor.fetchone()
+    finally:
+        conn.close()
 
     if not user or hash_password(password) != user['password']:
         return jsonify({'message': 'Invalid email or password'}), 401
 
     token = jwt.encode({
         'email': user['email'],
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+        'exp': datetime.utcnow() + timedelta(hours=1)
     }, app.config['SECRET_KEY'], algorithm="HS256")
 
     return jsonify({
         'message': 'Signed in successfully',
         'token': token,
-        'userID': user['userID']  # Assuming 'id' is the column name for userID in your database
+        'userID': user['userID']  # Adjust if your column name is different
     })
-
-
 
 @app.route('/protected', methods=['GET'])
 def protected():

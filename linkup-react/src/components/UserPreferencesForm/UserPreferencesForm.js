@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import './UserPreferencesForm.css';
 
 const UserPreferencesForm = () => {
   const { userID } = useParams();
+  const navigate = useNavigate(); // Initialize useNavigate
   const [minAge, setMinAge] = useState('');
   const [maxAge, setMaxAge] = useState('');
   const [genderPreference, setGenderPreference] = useState('');
@@ -28,6 +29,9 @@ const UserPreferencesForm = () => {
       });
 
       console.log('Preferences updated successfully:', response.data);
+      
+      // Navigate to the Home page after successful submission
+      navigate(`/home/${userID}`); // Navigate to /home with userID
     } catch (error) {
       console.error('Error updating preferences:', error);
     }
