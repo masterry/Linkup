@@ -61,7 +61,10 @@ const Messages = () => {
         {messages.length === 0 && <p>No messages yet. Start the conversation!</p>}
         <div className="messages-list">
           {messages.map((message, index) => (
-            <div key={index} className={`message ${message.sender === sender ? 'sent' : 'received'}`}>
+            <div
+              key={index}
+              className={`message ${message.sender === parseInt(sender) ? 'sent' : 'received'}`}
+            >
               <p>{message.content}</p>
             </div>
           ))}

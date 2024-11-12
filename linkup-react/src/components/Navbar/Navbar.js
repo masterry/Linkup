@@ -16,7 +16,7 @@ const Navbar = ({ userID }) => {
                     <Link to={`/userpreferences/${userID}`}>Preferences</Link>
                 </li>
                 <li>
-                    <Link to={`/messages?sender=${userID}`}>Messages</Link>
+                    <Link to={`/chathistory?sender=${userID}`}>Messages</Link>
                 </li>
             </ul>
         </nav>

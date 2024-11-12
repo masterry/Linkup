@@ -30,15 +30,14 @@
 }
 
 .sent {
-  text-align: right;
-  background-color: #f0f0f0;
+  align-self: flex-end;
+  background-color: #007bff; /* Customize as needed */
 }
 
 .received {
-  text-align: left;
-  background-color: #e0e0e0;
+  align-self: flex-start;
+  background-color: #6c757d; /* Customize as needed */
 }
-
 
 .messages-footer {
   display: flex;

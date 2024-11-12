@@ -544,6 +544,103 @@ def get_messages():
     } for message in messages]), 200
 
 
+@app.route('/get_user_chat_history/<int:user_id>', methods=['GET'])
+def get_user_chat_history(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # First, get all distinct users the logged-in user has chatted with (sender or recipient)
+    cursor.execute('''
+        SELECT DISTINCT sender, recipient
+        FROM messages
+        WHERE sender = ? OR recipient = ?
+    ''', (user_id, user_id))
+
+    users = cursor.fetchall()
+
+    chat_history = []
+
+    for user in users:
+        # For each user, get the most recent message between them and the logged-in user
+        other_user = user['sender'] if user['recipient'] == user_id else user['recipient']
+
+        cursor.execute('''
+            SELECT content, timestamp
+            FROM messages
+            WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?)
+            ORDER BY timestamp DESC LIMIT 1
+        ''', (user_id, other_user, other_user, user_id))
+
+        last_message = cursor.fetchone()
+
+        # Add the other user's ID and the last message to the result
+        chat_history.append({
+            'user_id': other_user,
+            'last_message': last_message['content'] if last_message else 'No messages',
+            'timestamp': last_message['timestamp'] if last_message else None
+        })
+
+    conn.close()
+
+    return jsonify(chat_history), 200
+
+
+@app.route('/gets_user_chat_history', methods=['GET'])
+def gets_user_chat_history():
+    # Get sender and recipient from query parameters
+    sender = request.args.get('sender')
+    recipient = request.args.get('recipient')
+
+    if not sender or not recipient:
+        return jsonify({'error': 'Both sender and recipient parameters are required'}), 400
+
+    # Convert to integers (in case they're passed as strings)
+    sender = int(sender)
+    recipient = int(recipient)
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Debug: Print the query to see what's happening
+    print(f"SELECT DISTINCT sender, recipient FROM messages WHERE sender = {sender} OR recipient = {recipient}")
+
+    cursor.execute('''
+        SELECT DISTINCT sender, recipient
+        FROM messages
+        WHERE (sender = ? OR recipient = ?) AND (sender = ? OR recipient = ?)
+    ''', (sender, recipient, recipient, sender))
+
+    users = cursor.fetchall()
+
+    print(f"Users: {users}")  # Check what users are being fetched
+
+    chat_history = []
+
+    for user in users:
+        other_user = user['sender'] if user['recipient'] == sender else user['recipient']
+
+        cursor.execute('''
+            SELECT content, timestamp
+            FROM messages
+            WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?)
+            ORDER BY timestamp DESC LIMIT 1
+        ''', (sender, other_user, other_user, sender))
+
+        last_message = cursor.fetchone()
+
+        chat_history.append({
+            'user_id': other_user,
+            'last_message': last_message['content'] if last_message else 'No messages',
+            'timestamp': last_message['timestamp'] if last_message else None
+        })
+
+    conn.close()
+
+    return jsonify(chat_history), 200
+
+
+
+
 @app.route('/create_match', methods=['POST'])
 def create_match():
     data = request.get_json()
