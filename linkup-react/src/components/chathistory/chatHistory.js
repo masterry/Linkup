@@ -1,133 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './chatHistory.css';
+import { useParams, Link } from 'react-router-dom';
+import './chatHistory.css'; // Optional: create a CSS file for custom styles
 
 const ChatHistory = () => {
-  const [conversations, setConversations] = useState([]);
-  const [selectedConversation, setSelectedConversation] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [messageContent, setMessageContent] = useState('');
-  const [error, setError] = useState(null);
+    const { userID } = useParams(); // Extract userID from URL
+    const [chatHistory, setChatHistory] = useState([]);
 
-  const navigate = useNavigate();  // Use useNavigate instead of useHistory
-  const location = useLocation();  // Use useLocation to access the state passed via the route
+    useEffect(() => {
+        // Fetch chat history data from the API
+        const fetchChatHistory = async () => {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/get_user_chat_history/${userID}`);
+                const data = await response.json();
+                setChatHistory(data);
+            } catch (error) {
+                console.error('Error fetching chat history:', error);
+            }
+        };
 
-  const userId = location.state?.user_id;  // Get user_id from the location state
+        fetchChatHistory();
+    }, [userID]);
 
-  // Fetch list of conversations
-  useEffect(() => {
-    if (!userId) return;  // Exit if user_id is not available
-
-    const fetchConversations = async () => {
-      try {
-        const response = await axios.get(`http://127.0.0.1:5000/get_user_chat_history/${userId}`); // API to fetch conversations with user_id
-        setConversations(response.data);
-      } catch (error) {
-        console.error("Error fetching conversations:", error);
-        setError(error.message);
-      }
-    };
-
-    fetchConversations();
-  }, [userId]);
-
-  // Fetch messages when a conversation is selected
-  useEffect(() => {
-    if (selectedConversation) {
-      const { sender, recipient } = selectedConversation;
-
-      const fetchMessages = async () => {
-        try {
-          const response = await axios.get('http://127.0.0.1:5000/get_messages', {
-            params: { sender, recipient },
-          });
-          setMessages(response.data);
-        } catch (error) {
-          console.error("Error fetching messages:", error);
-          setError(error.message);
-        }
-      };
-
-      fetchMessages();
-    }
-  }, [selectedConversation]);
-
-  const handleSendMessage = async () => {
-    if (!messageContent.trim()) return;
-
-    const payload = {
-      sender: selectedConversation.sender,
-      recipient: selectedConversation.recipient,
-      content: messageContent,
-    };
-
-    try {
-      await axios.post('http://127.0.0.1:5000/send_message', payload);
-      setMessageContent('');
-      const response = await axios.get('http://127.0.0.1:5000/get_messages', {
-        params: { sender: selectedConversation.sender, recipient: selectedConversation.recipient },
-      });
-      setMessages(response.data);
-    } catch (error) {
-      console.error("Error sending message:", error);
-      setError(error.message);
-    }
-  };
-
-  const handleConversationClick = (conversation) => {
-    setSelectedConversation(conversation);
-    navigate(`?sender=${conversation.sender}&recipient=${conversation.recipient}`);  // Use navigate instead of history.push
-  };
-
-  return (
-    <div className="messages-container">
-      <header className="messages-header">
-        <h2>Chat History</h2>
-      </header>
-
-      {/* Conversation List */}
-      <main className="conversations-list">
-        {error && <p className="error-message">Error: {error}</p>}
-        {conversations.length === 0 && <p>No conversations available.</p>}
-        <ul>
-          {conversations.map((conversation, index) => (
-            <li key={index} onClick={() => handleConversationClick(conversation)} className="conversation-item">
-              <span>{conversation.recipient}</span>
-            </li>
-          ))}
-        </ul>
-      </main>
-
-      {/* Chat History of selected conversation */}
-      {selectedConversation && (
-        <>
-          <header className="messages-header">
-            <h2>Chat with {selectedConversation.recipient}</h2>
-          </header>
-          <main className="messages-content">
-            {messages.length === 0 && <p>No messages yet. Start the conversation!</p>}
-            <div className="messages-list">
-              {messages.map((message, index) => (
-                <div key={index} className={`message ${message.sender === selectedConversation.sender ? 'sent' : 'received'}`}>
-                  <p>{message.content}</p>
-                </div>
-              ))}
+    return (
+        <div className="chat-history-container">
+            <h2>Chat History</h2>
+            <div className="chat-history">
+                {chatHistory.length === 0 ? (
+                    <p>No conversations yet</p>
+                ) : (
+                    chatHistory.map((chat, index) => (
+                        <Link 
+                            to={`/messages?sender=${userID}&recipient=${chat.user_id}`} 
+                            key={index} 
+                            className="chat-item"
+                        >
+                            <div className="chat-info">
+                                <p className="chat-user-name">{chat.user_name}</p>
+                                <p className="last-message">{chat.last_message}</p>
+                            </div>
+                            <p className="chat-timestamp">{new Date(chat.timestamp).toLocaleString()}</p>
+                        </Link>
+                    ))
+                )}
             </div>
-          </main>
-          <footer className="messages-footer">
-            <input
-              type="text"
-              value={messageContent}
-              onChange={(e) => setMessageContent(e.target.value)}
-              placeholder="Type a message..."
-            />
-            <button onClick={handleSendMessage}>Send</button>
-          </footer>
-        </>
-      )}
-    </div>
-  );
+        </div>
+    );
 };
 
 export default ChatHistory;

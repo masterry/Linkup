@@ -88,9 +88,15 @@ const HomePage = () => {
 
   const startChat = () => {
     const targetUser = matches[currentMatchIndex].userID; // Get the target user's ID
-    navigate(`/messages?sender=${userID}&recipient=${targetUser}`); // Redirect with parameters
+    const targetUserName = matches[currentMatchIndex].name; // Get the target user's name
+    
+    // Pass the `recipient_name` as state, and `sender` and `recipient` as query parameters
+    navigate(`/initiatechat?sender=${userID}&recipient=${targetUser}`, {
+      state: { recipient_name: targetUserName, recipient: targetUser }
+    });
     setMatchPopup(false);
   };
+  
 
   const keepSwiping = () => {
     setMatchPopup(false);

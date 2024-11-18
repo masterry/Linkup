@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Route, Routes, useParams, useLocation } from 'react-router-dom';
 import SignUp from "./components/signup/signup";
@@ -10,6 +9,7 @@ import Messages from './components/messages/messages';
 import Navbar from './components/Navbar/Navbar'; // Import the Navbar
 import Profile from './components/Profile/Profile'; // Import Profile component
 import ChatHistory from './components/chathistory/chatHistory';
+import InitiateChat from './components/InitiateChat/initiateChat';
 import { useEffect, useState } from 'react';
 
 // MainApp component handles routing and navbar visibility
@@ -33,6 +33,7 @@ function MainApp() {
         <Route path="/createprofile/:userID" element={<CreateProfile />} />
         <Route path="/userpreferences/:userID" element={<UserPreferencesForm />} />
         <Route path="/messages" element={<Messages />} />
+        <Route path="/initiatechat" element={<InitiateChat />} />
         <Route path="/chathistory/:userID" element={<ChatHistory />} />
         <Route path="/profile/:userID" element={<Profile />} /> {/* Route for Profile */}
       </Routes>

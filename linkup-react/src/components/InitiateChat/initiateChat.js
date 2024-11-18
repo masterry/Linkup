@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import './messages.css';
+import './initiateChat.css';
 
-const Messages = () => {
+const InitiateChat = () => {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const sender = query.get('sender');
@@ -17,6 +17,11 @@ const Messages = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    // Check if recipient name is available in state
+    if (location.state && location.state.recipient_name) {
+      setRecipientName(location.state.recipient_name);
+    }
+
     const fetchMessages = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:5000/get_messages', {
@@ -24,14 +29,10 @@ const Messages = () => {
         });
         setMessages(response.data);
         
-        // Set recipient name based on recipient value in URL and response
-        if (response.data.length > 0) {
+        // If no recipient name from state, fallback to the first message's recipient_name
+        if (!location.state?.recipient_name && response.data.length > 0) {
           const message = response.data[0];
-          if (message.recipient == recipient) {
-            setRecipientName(message.recipient_name);  // Use recipient_name if recipient matches
-          } else {
-            setRecipientName(message.sender_name);  // Otherwise use sender_name
-          }
+          setRecipientName(message.recipient === recipient ? message.recipient_name : message.sender_name);
         }
       } catch (error) {
         console.error("Error fetching messages:", error);
@@ -40,7 +41,7 @@ const Messages = () => {
     };
 
     fetchMessages();
-  }, [sender, recipient]);
+  }, [sender, recipient, location.state]);
 
   const handleSendMessage = async () => {
     if (!messageContent.trim()) return;   
@@ -101,4 +102,4 @@ const Messages = () => {
   );
 };
 
-export default Messages;
+export default InitiateChat;

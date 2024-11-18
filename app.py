@@ -197,25 +197,6 @@ def protected():
         return jsonify({'message': 'Invalid token'}), 401
 
 
-@app.route('/api/swipe', methods=['POST'])
-def swipe():
-    data = request.get_json()
-
-    user = data.get('user')
-    target_user = data.get('targetUser')
-    direction = data.get('direction')
-
-    # Input validation
-    if not user or not target_user or direction not in ['like', 'dislike']:
-        return jsonify({'message': 'Invalid input'}), 400
-
-    # Create a Swipe instance
-    swipe_instance = Swipe(user, target_user, direction)
-
-    # Save the swipe record into the database
-    swipe_instance.save_to_db()
-
-    return jsonify({'swipeID': swipe_instance.swipeID, 'message': 'Swipe recorded'}), 201
 
 
 @app.route('/api/swipes', methods=['POST'])
@@ -238,12 +219,20 @@ def swipes():
 
     print(f"Swipe recorded: user={user}, target_user={target_user}, direction={direction}, swipeID={swipe_instance.swipeID}")
 
+    # Retrieve targetUser's name and userID from the users table
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT userID, name FROM users WHERE userID = ?', (target_user,))
+    target_user_data = cursor.fetchone()
+
+    if target_user_data:
+        recipient_name = target_user_data['name']
+        recipient = target_user_data['userID']
+    else:
+        return jsonify({'message': 'Target user not found'}), 404
+
     # Check for mutual 'like' to create a match
     if direction == 'like':
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        # Check if targetUser has liked the user back
         cursor.execute(
             'SELECT * FROM swipe WHERE user = ? AND targetUser = ? AND direction = ?',
             (target_user, user, 'like')
@@ -259,11 +248,15 @@ def swipes():
             conn.commit()
             conn.close()
             return jsonify({'swipeID': swipe_instance.swipeID, 'matchID': match_id,
+                            'recipient_name': recipient_name, 'recipient': recipient,
                             'message': 'Swipe recorded and match created'}), 201
 
         conn.close()
 
-    return jsonify({'swipeID': swipe_instance.swipeID, 'message': 'Swipe recorded'}), 201
+    return jsonify({'swipeID': swipe_instance.swipeID, 'recipient_name': recipient_name, 'recipient': recipient,
+                    'message': 'Swipe recorded'}), 201
+
+
 
 
 
@@ -530,18 +523,28 @@ def get_messages():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM messages WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?)',
-                   (sender, recipient, recipient, sender))
+    cursor.execute('''
+        SELECT m.sender, m.recipient, m.content, m.timestamp, u1.name AS sender_name, u2.name AS recipient_name
+        FROM messages m
+        JOIN users u1 ON m.sender = u1.userID
+        JOIN users u2 ON m.recipient = u2.userID
+        WHERE (m.sender = ? AND m.recipient = ?) OR (m.sender = ? AND m.recipient = ?)
+    ''', (sender, recipient, recipient, sender))
+
     messages = cursor.fetchall()
     conn.close()
 
-    # Convert messages to a list of dictionaries, including content instead of message
+    # Convert messages to a list of dictionaries, including sender and recipient names
     return jsonify([{
         'sender': message['sender'],
         'recipient': message['recipient'],
-        'content': message['content'],  # Adjusted from 'message' to 'content'
+        'sender_name': message['sender_name'],  # Sender's name from users table
+        'recipient_name': message['recipient_name'],  # Recipient's name from users table
+        'content': message['content'],  # Content of the message
         'timestamp': message['timestamp']
     } for message in messages]), 200
+
+
 
 
 @app.route('/get_user_chat_history/<int:user_id>', methods=['GET'])
@@ -549,21 +552,24 @@ def get_user_chat_history(user_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # First, get all distinct users the logged-in user has chatted with (sender or recipient)
+    # Get distinct users the logged-in user has chatted with (either as sender or recipient)
     cursor.execute('''
-        SELECT DISTINCT sender, recipient
+        SELECT DISTINCT CASE 
+                            WHEN sender = ? THEN recipient 
+                            ELSE sender 
+                        END AS other_user
         FROM messages
         WHERE sender = ? OR recipient = ?
-    ''', (user_id, user_id))
+    ''', (user_id, user_id, user_id))
 
     users = cursor.fetchall()
 
-    chat_history = []
+    latest_messages = []
 
     for user in users:
-        # For each user, get the most recent message between them and the logged-in user
-        other_user = user['sender'] if user['recipient'] == user_id else user['recipient']
+        other_user = user['other_user']
 
+        # Get the most recent message between the logged-in user and the other user
         cursor.execute('''
             SELECT content, timestamp
             FROM messages
@@ -573,70 +579,26 @@ def get_user_chat_history(user_id):
 
         last_message = cursor.fetchone()
 
-        # Add the other user's ID and the last message to the result
-        chat_history.append({
-            'user_id': other_user,
-            'last_message': last_message['content'] if last_message else 'No messages',
-            'timestamp': last_message['timestamp'] if last_message else None
-        })
-
-    conn.close()
-
-    return jsonify(chat_history), 200
-
-
-@app.route('/gets_user_chat_history', methods=['GET'])
-def gets_user_chat_history():
-    # Get sender and recipient from query parameters
-    sender = request.args.get('sender')
-    recipient = request.args.get('recipient')
-
-    if not sender or not recipient:
-        return jsonify({'error': 'Both sender and recipient parameters are required'}), 400
-
-    # Convert to integers (in case they're passed as strings)
-    sender = int(sender)
-    recipient = int(recipient)
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    # Debug: Print the query to see what's happening
-    print(f"SELECT DISTINCT sender, recipient FROM messages WHERE sender = {sender} OR recipient = {recipient}")
-
-    cursor.execute('''
-        SELECT DISTINCT sender, recipient
-        FROM messages
-        WHERE (sender = ? OR recipient = ?) AND (sender = ? OR recipient = ?)
-    ''', (sender, recipient, recipient, sender))
-
-    users = cursor.fetchall()
-
-    print(f"Users: {users}")  # Check what users are being fetched
-
-    chat_history = []
-
-    for user in users:
-        other_user = user['sender'] if user['recipient'] == sender else user['recipient']
-
+        # Get the name of the other user from the users table
         cursor.execute('''
-            SELECT content, timestamp
-            FROM messages
-            WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?)
-            ORDER BY timestamp DESC LIMIT 1
-        ''', (sender, other_user, other_user, sender))
+            SELECT name
+            FROM users
+            WHERE userID = ?
+        ''', (other_user,))
 
-        last_message = cursor.fetchone()
+        user_name = cursor.fetchone()
 
-        chat_history.append({
+        # Add the other user's ID, name, and the last message to the result
+        latest_messages.append({
             'user_id': other_user,
+            'user_name': user_name['name'] if user_name else 'Unknown',
             'last_message': last_message['content'] if last_message else 'No messages',
             'timestamp': last_message['timestamp'] if last_message else None
         })
 
     conn.close()
 
-    return jsonify(chat_history), 200
+    return jsonify(latest_messages), 200
 
 
 
