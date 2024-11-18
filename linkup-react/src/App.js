@@ -6,42 +6,78 @@ import HomePage from './components/home/home';
 import CreateProfile from './components/createprofile/createProfile';
 import UserPreferencesForm from './components/UserPreferencesForm/UserPreferencesForm';
 import Messages from './components/messages/messages';
-import Navbar from './components/Navbar/Navbar'; // Import the Navbar
-import Profile from './components/Profile/Profile'; // Import Profile component
+import Navbar from './components/Navbar/Navbar';
+import Profile from './components/Profile/Profile';
 import ChatHistory from './components/chathistory/chatHistory';
 import InitiateChat from './components/InitiateChat/initiateChat';
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-// MainApp component handles routing and navbar visibility
 function MainApp() {
   const [userID, setUserID] = useState(null);
-  const location = useLocation(); // Get current location
+  const currentLocation = useLocation(); // Track changes in route
 
   useEffect(() => {
-    // Logic to get userID here
-  }, []);
+    if (userID) {
+      // Function to update location
+      const updateLocation = (lat, long) => {
+        const locationData = `[${lat}, ${long}]`; // Format location as string
+
+        // Send location to the backend API
+        axios.post(`http://127.0.0.1:5000/update_location/${userID}`, { location: locationData })
+          .then(response => {
+            console.log('Location updated successfully:', response.data);
+          })
+          .catch(error => {
+            console.error('Error updating location:', error);
+          });
+      };
+
+      // Success callback for geolocation
+      const success = (position) => {
+        const { latitude, longitude } = position.coords;
+        updateLocation(latitude, longitude); // Update location on backend
+      };
+
+      // Error callback for geolocation
+      const error = (err) => {
+        console.error('Error getting geolocation:', err.message);
+      };
+
+      // Start watching the user's location
+      if (navigator.geolocation) {
+        const geoWatchId = navigator.geolocation.watchPosition(success, error, { enableHighAccuracy: true, timeout: 10000 });
+
+        // Cleanup geolocation watch on component unmount
+        return () => {
+          navigator.geolocation.clearWatch(geoWatchId);
+        };
+      } else {
+        console.error('Geolocation is not supported by this browser.');
+      }
+    }
+  }, [userID, currentLocation]); // Runs when userID or route changes
 
   return (
     <>
-      {location.pathname !== '/' && location.pathname !== '/signup' && (
+      {currentLocation.pathname !== '/' && currentLocation.pathname !== '/signup' && (
         <Navbar userID={userID} />
       )}
       <Routes>
         <Route path="/" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/home/:userID" element={<HomeWrapper setUserID={setUserID} />} />
-        <Route path="/createprofile/:userID" element={<CreateProfile />} />
-        <Route path="/userpreferences/:userID" element={<UserPreferencesForm />} />
-        <Route path="/messages" element={<Messages />} />
-        <Route path="/initiatechat" element={<InitiateChat />} />
-        <Route path="/chathistory/:userID" element={<ChatHistory />} />
-        <Route path="/profile/:userID" element={<Profile />} /> {/* Route for Profile */}
+        <Route path="/createprofile/:userID" element={<CreateProfile userID={userID} />} />
+        <Route path="/userpreferences/:userID" element={<UserPreferencesForm userID={userID} />} />
+        <Route path="/messages" element={<Messages userID={userID} />} />
+        <Route path="/initiatechat" element={<InitiateChat userID={userID} />} />
+        <Route path="/chathistory/:userID" element={<ChatHistory userID={userID} />} />
+        <Route path="/profile/:userID" element={<Profile userID={userID} />} />
       </Routes>
     </>
   );
 }
 
-// HomeWrapper component to handle userID retrieval and pass it to HomePage
 function HomeWrapper({ setUserID }) {
   const { userID } = useParams(); // Get userID from the URL params
 
@@ -49,10 +85,9 @@ function HomeWrapper({ setUserID }) {
     setUserID(userID); // Set the userID in App state
   }, [userID, setUserID]);
 
-  return <HomePage />; // Render HomePage
+  return <HomePage userID={userID} />; // Render HomePage
 }
 
-// App component wraps everything in a Router
 function App() {
   return (
     <Router>
