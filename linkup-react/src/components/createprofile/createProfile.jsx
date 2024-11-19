@@ -14,7 +14,7 @@ const CreateProfile = () => {
     const [gender, setGender] = useState('');
     const [location, setLocation] = useState(null); // Start with null, no default location
     const [bio, setBio] = useState('');
-    const [profilePicture, setProfilePicture] = useState('');
+    const [profilePicture, setProfilePicture] = useState(null); // Set this as file, not string
     const [message, setMessage] = useState('');
 
     // Initialize Leaflet icon
@@ -53,20 +53,31 @@ const CreateProfile = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         if (!location) {
-            alert("Please allow location access to create your profile."); // Alert if location is not set
+            alert("Please allow location access to create your profile.");
             return;
         }
-    
+
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('age', age);
+        formData.append('gender', gender);
+        formData.append('location', JSON.stringify(location)); // Ensure location is a stringified array
+        formData.append('bio', bio);
+
+        if (profilePicture) {
+            formData.append('profilePicture', profilePicture);
+        }
+
+        // Log the data being sent to see if it’s correct
+        console.log('FormData:', formData);
+
         try {
-            const response = await axios.put(`http://127.0.0.1:5000/api/userprofile/${userID}`, {
-                name,
-                age,
-                gender,
-                location: JSON.stringify(location), // Convert location to a string
-                bio,
-                profilePicture,
+            const response = await axios.put(`http://127.0.0.1:5000/api/usersprofile/${userID}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
             setMessage(response.data.message);
             navigate(`/userpreferences/${userID}`);
@@ -79,11 +90,7 @@ const CreateProfile = () => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setProfilePicture(reader.result);
-            };
-            reader.readAsDataURL(file);
+            setProfilePicture(file);  // Store file itself
         }
     };
 
@@ -152,7 +159,7 @@ const CreateProfile = () => {
                         onChange={handleImageChange}
                     />
                 </div>
-                {profilePicture && <img src={profilePicture} alt="Profile Preview" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />}
+                {profilePicture && <img src={URL.createObjectURL(profilePicture)} alt="Profile Preview" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />}
                 <button type="submit" className="signup-button">Create Profile</button>
             </form>
             {message && <p className="message">{message}</p>}

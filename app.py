@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import jwt
 import hashlib
@@ -7,11 +7,27 @@ import datetime
 import uuid
 from geopy.distance import geodesic
 from datetime import datetime, timedelta
+from werkzeug.utils import secure_filename
+import os
+import json
 
 
 app = Flask(__name__)
 CORS(app)
 app.config['SECRET_KEY'] = 'your_secret_key'
+
+
+# Set upload folder and allowed file extensions
+app.config['UPLOAD_FOLDER'] = 'uploads/'
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
+
+# Check if the file extension is allowed
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+# Ensure the upload folder exists
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 
 class User:
@@ -283,35 +299,136 @@ def get_user(userID):
     return jsonify(user_data)
 
 
-@app.route('/api/userprofile/<int:userID>', methods=['PUT'])
-def update_user(userID):
-    data = request.get_json()
 
-    if not data:
-        return jsonify({"error": "Invalid input"}), 400
+@app.route('/api/usersprofile/<int:userID>', methods=['PUT'])
+def update_users(userID):
+    # Log incoming request data
+    print(f"Received PUT request for userID: {userID}")
+    print(f"Request Form: {request.form}")
+    print(f"Request Files: {request.files}")
 
-    name = data.get("name")
-    age = data.get("age")
-    gender = data.get("gender")
-    location = data.get("location")
-    bio = data.get("bio")
-    profilePicture = data.get("profilePicture")
+    # Handle the file upload and form data from the request
+    if 'profilePicture' in request.files:
+        file = request.files['profilePicture']
+        if file and allowed_file(file.filename):
+            filename = str(uuid.uuid4()) + '.' + file.filename.rsplit('.', 1)[1].lower()
+            file_path = os.path.join('uploads', filename)  # Assuming "uploads" folder is used for profile pictures
+            file.save(os.path.join(os.getcwd(), file_path))  # Save file to the uploads folder
+        else:
+            return jsonify({"error": "Invalid file type"}), 400
+    else:
+        file_path = None  # No file provided
 
-    if None in (name, age, gender, location, bio):
+    # Handle the form data (text fields) as JSON or form data (can have both)
+    name = request.form.get('name')
+    age = request.form.get('age')
+    gender = request.form.get('gender')
+    location = request.form.get('location')  # Expecting a string like "34.2526651, 35.6633782"
+    bio = request.form.get('bio')
+
+    print(f"Name: {name}, Age: {age}, Gender: {gender}, Location: {location}, Bio: {bio}")
+
+    # If location is provided, convert it from stringified array to a proper list
+    if location:
+        try:
+            # If location is already a stringified array (e.g., '[34.2526651, 35.6633782]')
+            location = json.loads(location)  # Convert stringified array back to list
+        except json.JSONDecodeError:
+            return jsonify({"error": "Invalid location format"}), 400
+    else:
+        location = None  # No location provided
+
+    # If any required form data is missing, handle it appropriately
+    if None in [name, age, gender, bio]:
         return jsonify({"error": "Missing data"}), 400
 
+    # Prepare the update fields, ignoring missing ones
+    update_fields = []
+    update_values = []
+
+    if name:
+        update_fields.append("name = ?")
+        update_values.append(name)
+
+    if age:
+        update_fields.append("age = ?")
+        update_values.append(age)
+
+    if gender:
+        update_fields.append("gender = ?")
+        update_values.append(gender)
+
+    if location:
+        update_fields.append("location = ?")
+        update_values.append(json.dumps(location))  # Store location as a JSON string
+
+    if bio:
+        update_fields.append("bio = ?")
+        update_values.append(bio)
+
+    if file_path:
+        update_fields.append("profilePicture = ?")
+        update_values.append(file_path)
+
+    if not update_fields:
+        return jsonify({"error": "No valid data to update"}), 400
+
+    # Add the userID at the end for the WHERE clause
+    update_values.append(userID)
+    update_query = f"UPDATE users SET {', '.join(update_fields)} WHERE userID = ?"
+
+    # Connect to the database and execute the update query
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute('''
-        UPDATE users 
-        SET name = ?, age = ?, gender = ?, location = ?, bio = ?, profilePicture = ? 
-        WHERE userID = ?
-    ''', (name, age, gender, location, bio, profilePicture, userID))
-
+    cursor.execute(update_query, tuple(update_values))
     conn.commit()
     conn.close()
-    return jsonify({"message": "Profile updated successfully"})
+
+    return jsonify({"message": "Profile updated successfully"}), 200
+
+
+
+
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(os.path.join(app.root_path, 'uploads'), filename)
+
+
+@app.route('/api/userprofile/<int:userID>/profile-picture', methods=['PUT'])
+def update_profile_picture(userID):
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+        # Save the file
+        file.save(file_path)
+
+        # Now, update the profile picture in the database
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            UPDATE users 
+            SET profilePicture = ? 
+            WHERE userID = ?
+        ''', (file_path, userID))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({"message": "Profile picture updated successfully", "file_path": file_path})
+
+    return jsonify({"error": "Invalid file type"}), 400
 
 
 @app.route('/api/user/preferences/<int:userID>', methods=['PUT'])

@@ -115,8 +115,12 @@ const HomePage = () => {
         {matches.length === 0 && !error && !noMoreMatches && <p>Loading matches...</p>} 
         {matches.length > 0 && !noMoreMatches && (
           <div className={`card ${swipeDirection}`}>
-            {matches[currentMatchIndex].profilePicture ? (
-              <img src={matches[currentMatchIndex].profilePicture} alt="Profile" />
+            {matches[currentMatchIndex] && matches[currentMatchIndex].profilePicture ? (
+              <img 
+                src={`http://127.0.0.1:5000/${matches[currentMatchIndex].profilePicture}`} 
+                alt="Profile" 
+                className="profile-picture" 
+              />
             ) : (
               <p>No profile picture available</p>
             )}
