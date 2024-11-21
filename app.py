@@ -1,6 +1,8 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, make_response
 from flask_cors import CORS
 import jwt
+import bcrypt
+import base64
 import hashlib
 import sqlite3
 import datetime
@@ -111,16 +113,26 @@ class NotificationService:
         self.notify_user(match.user2, message2)
 
 
+
+
 def get_db_connection():
     conn = sqlite3.connect('linkup.db')
     conn.row_factory = sqlite3.Row
     return conn
 
 
+# Database connection function
+def get_db_connection():
+    conn = sqlite3.connect('linkup.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+# Hash password using bcrypt
 def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
-
-
+    # Generate a salt and hash the password
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -165,7 +177,6 @@ def signup():
     # Return the userID along with the success message
     return jsonify({'message': 'Account created successfully', 'userID': userID, 'preferencesID': preferencesID}), 201
 
-
 @app.route('/signin', methods=['POST'])
 def signin():
     data = request.json
@@ -184,7 +195,8 @@ def signin():
     finally:
         conn.close()
 
-    if not user or hash_password(password) != user['password']:
+    # Check if user exists and if password matches
+    if not user or not bcrypt.checkpw(password.encode('utf-8'), user['password']):
         return jsonify({'message': 'Invalid email or password'}), 401
 
     token = jwt.encode({
@@ -192,20 +204,29 @@ def signin():
         'exp': datetime.utcnow() + timedelta(hours=1)
     }, app.config['SECRET_KEY'], algorithm="HS256")
 
-    return jsonify({
+    # Set the token as an HTTP-only cookie
+    response = jsonify({
         'message': 'Signed in successfully',
-        'token': token,
-        'userID': user['userID']  # Adjust if your column name is different
+        'userID': user['userID']
     })
+    response.set_cookie('token', token, httponly=True, secure=True, samesite='Strict')
+
+    return response
+
 
 @app.route('/protected', methods=['GET'])
 def protected():
     token = request.headers.get('Authorization')
+
     if not token:
         return jsonify({'message': 'Token is missing'}), 403
 
+    # Remove the 'Bearer ' prefix
+    token = token.split(" ")[1]
+
     try:
-        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+        # Decode the token using the secret key
+        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])  # Or RS256 if you're using RSA
         return jsonify({'message': f'Welcome {data["email"]}'})
     except jwt.ExpiredSignatureError:
         return jsonify({'message': 'Token has expired'}), 401
@@ -532,11 +553,14 @@ def get_matches(user_id):
     min_age, max_age, gender_preference, max_distance, user_location, user_age, user_gender = user_data
 
     # Clean and parse the user_location
-    user_location = user_location.strip('[]')  # Remove brackets
-    try:
-        user_lat, user_lng = map(float, user_location.split(','))
-    except ValueError as e:
-        return jsonify({'error': 'Invalid location format for user'}), 400
+    user_location = user_location.strip('[]') if user_location else None  # Handle None for location
+    if user_location:
+        try:
+            user_lat, user_lng = map(float, user_location.split(','))
+        except ValueError:
+            return jsonify({'error': 'Invalid location format for user'}), 400
+    else:
+        user_lat, user_lng = None, None
 
     # Fetch potential matches excluding swiped users
     conn = sqlite3.connect('linkup.db')
@@ -560,23 +584,31 @@ def get_matches(user_id):
     for match in potential_matches:
         match_id, match_name, match_profile_picture, match_location, match_age, match_gender = match
 
-        # Clean and parse the match_location
-        match_location = match_location.strip('[]')  # Remove brackets
-        try:
-            match_lat, match_lng = map(float, match_location.split(','))
-        except ValueError as e:
-            print(f"Error parsing match location {match_location}: {e}")  # Debugging line
-            continue  # Skip this match if the location format is incorrect
+        # Handle None values for match location, age, and gender
+        match_location = match_location.strip('[]') if match_location else None
+        if match_location:
+            try:
+                match_lat, match_lng = map(float, match_location.split(','))
+            except ValueError:
+                print(f"Error parsing match location {match_location}")  # Debugging line
+                continue  # Skip this match if the location format is incorrect
+        else:
+            match_lat, match_lng = None, None
 
-        distance = geodesic((user_lat, user_lng), (match_lat, match_lng)).km
+        # Check if match location exists and calculate distance if possible
+        distance = None
+        if user_lat is not None and user_lng is not None and match_lat is not None and match_lng is not None:
+            distance = geodesic((user_lat, user_lng), (match_lat, match_lng)).km
+        else:
+            distance = float('inf')  # Set distance to an impossibly large value if location is missing
 
-        # Check if within distance preference
-        if distance > max_distance:
+        # Skip if distance exceeds preference or if the match has no valid location
+        if distance > max_distance or distance == float('inf'):
             continue
 
-        # Check age and gender preference
-        if min_age <= match_age <= max_age:
-            if gender_preference in ['Any', match_gender]:  # Assuming 'Any' means any gender
+        # Check age and gender preference, skip if any of these are null for the match
+        if match_age is not None and min_age <= match_age <= max_age:
+            if match_gender is not None and gender_preference in ['Any', match_gender]:  # Assuming 'Any' means any gender
                 matches.append({
                     'userID': match_id,
                     'name': match_name,
@@ -587,6 +619,7 @@ def get_matches(user_id):
                 })
 
     return jsonify(matches)
+
 
 
 @app.route('/update_location/<int:user_id>', methods=['POST'])
