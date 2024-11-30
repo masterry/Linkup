@@ -1,35 +1,91 @@
+/* General Navbar Styles */
 nav {
-  background-color: rgba(248, 209, 224, 0.8);
-  padding: 20px;
-  width: 200px;
-  height: 100vh;
+  background-image: linear-gradient(to right, #f52988, #ff8f7b); /* Gradient from #f52988 to #ff8f7b */
+  padding: 15px 20px; /* Increased top/bottom padding for thickness */
   position: fixed;
   top: 0;
   left: 0;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
+  right: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+  z-index: 1000; /* Ensure navbar is on top */
+  display: flex;
+  justify-content: space-between; /* Space out the elements */
+  align-items: center; /* Vertically align items */
 }
 
 ul {
-  list-style: none; /* Remove default list styles */
-  padding: 0; /* Remove default padding */
-  margin: 0; /* Remove default margin */
+  display: flex;
+  justify-content: space-evenly; /* Distribute links with equal space between and at the edges */
+  align-items: center;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 100%; /* Ensure the ul takes up the full width */
 }
 
-li {
-  margin: 15px 0; /* Space between list items, adjusted for consistency */
+ul li {
+  margin: 0 15px; /* Adjusted margin for spacing around the icons */
 }
 
-a {
+ul li a {
+  color: white; /* Tinder-like pink color for links */
   text-decoration: none;
-  color: #d1006b;
-  display: block;
-  padding: 10px;
-  border-radius: 5px;
-  transition: background-color 0.3s;
+  font-size: 24px; /* Increase font size for better visibility of icons */
+  transition: color 0.3s ease;
+  display: flex;
+  justify-content: center; /* Center the icons horizontally */
+  align-items: center; /* Center the icons vertically */
 }
 
-a:hover {
-  background-color: rgba(255, 111, 145, 0.3);
-  color: #d1006b; 
+ul li a:hover {
+  color: #ff3b64; /* Darker pink on hover */
+}
+
+/* Edit Profile Button and Linkup name styling */
+.navbar-brand {
+  font-size: 20px; /* Adjust size for "Linkup" name */
+  font-weight: bold;
+  color: #ff4e7d; /* Match color to links */
+  text-decoration: none;
+  margin-right: auto; /* Push the logo to the left */
+}
+
+.edit-profile-button {
+  background-color: #ff4e7d;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.edit-profile-button:hover {
+  background-color: #ff3b64; /* Darker red on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  ul {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  ul li {
+    margin: 10px 0;
+  }
+
+  ul li a {
+    font-size: 28px; /* Increase font size for better visibility on mobile */
+  }
+
+  .navbar-brand {
+    font-size: 18px; /* Adjust size for "Linkup" name on mobile */
+  }
+
+  .edit-profile-button {
+    font-size: 14px; /* Smaller button text for mobile */
+  }
 }

@@ -8,6 +8,7 @@
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional: add shadow to give it a floating effect */
   overflow: hidden; /* Hide overflow content that exceeds the frame */
   background-color: white;
+  margin-top: 200px;
 }
 
 .messages-header {

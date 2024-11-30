@@ -1,63 +1,107 @@
-.signup-container {
-  background-color: rgba(248, 209, 224, 0.8); /* Light pink with some transparency */
-  padding: 20px;
-  border-radius: 10px; /* Adjusted border radius */
-  max-width: 400px; /* Match max width */
-  width: 150%; /* Ensure it fits within the available width */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Added box shadow */
-  margin-top: -200px;
+/* General Styles for Create Profile Page */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  min-height: 100vh;
+  padding: 40px;
+  box-sizing: border-box;
 }
 
 h2 {
-  color: #ff6f91; /* Pink for the heading */
+  font-size: 36px;
+  color: #ff4e7d; /* Tinder-like red/pink */
+  font-weight: bold;
+  margin-bottom: 30px;
   text-align: center;
 }
 
-.input-group {
-  margin-bottom: 15px;
-  display: flex; /* Use flexbox */
-  flex-direction: column; /* Arrange items in a column */
-  align-items: center; /* Center items horizontally */
+/* Form container */
+.form {
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  text-align: center;
 }
 
-label {
-  margin-bottom: 5px;
-  color: #d1006b; /* Darker pink for labels */
+/* Input container */
+.input-container {
+  margin-bottom: 20px;
 }
 
-input, select, textarea {
-  width: 80%; /* Set a width for input fields */
-  padding: 10px;
-  border: 1px solid #ff6f91;
-  border-radius: 5px;
+.label {
   font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 8px;
+  text-align: left;
 }
 
-input:focus, select:focus, textarea:focus {
-  border-color: #ff6f91;
+.input, .textarea {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  color: #333;
+  background-color: #f9f9f9;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.input:focus, .textarea:focus {
+  border-color: #ff4e7d; /* Tinder-like red/pink */
+  background-color: #fff;
   outline: none;
-  box-shadow: 0 0 5px rgba(255, 111, 145, 0.5);
 }
 
-.signup-button {
-  background-color: #ff6f91; /* Button color */
+.textarea {
+  height: 150px;
+  resize: vertical;
+}
+
+.preview-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-top: 10px;
+}
+
+.button {
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
   color: white;
-  padding: 10px;
+  background-color: #ff4e7d; /* Tinder-like red/pink */
   border: none;
-  border-radius: 5px;
+  border-radius: 30px;
   cursor: pointer;
-  font-size: 16px;
-  width: 80%; /* Match button width with input fields */
-  margin: 0 auto; /* Center the button */
-  display: block; /* Ensure the button is treated as a block element */
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
 }
 
-.signup-button:hover {
-  background-color: #ff4e7b; /* Darker pink on hover */
+.button:hover {
+  background-color: #ff3b64; /* Darker red/pink on hover */
 }
 
 .message {
+  color: #e41e7f;
+  font-size: 14px;
+  margin-top: 20px;
   text-align: center;
-  color: #d1006b; /* Message color */
-  margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .form {
+    width: 90%;
+  }
+
+  h2 {
+    font-size: 28px;
+  }
 }

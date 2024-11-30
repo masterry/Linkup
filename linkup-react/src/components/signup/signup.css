@@ -1,63 +1,117 @@
+/* General Styles for SignUp Page */
 .signup-container {
-  background-color: rgba(248, 209, 224, 0.8); /* Light pink with some transparency */
-  padding: 20px;
-  border-radius: 10px; /* Adjusted border radius */
-  max-width: 400px; /* Match max width */
-  width: 150%; /* Ensure it fits within the available width */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Added box shadow */
-  margin-top: -200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  min-height: 100vh;
+  padding: 40px;
+  box-sizing: border-box;
 }
 
-h2 {
-  color: #ff6f91; /* Pink for the heading */
+/* Header Styling */
+.header {
+  font-size: 36px;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 30px;
   text-align: center;
 }
 
-.input-group {
-  margin-bottom: 15px;
-  display: flex; /* Use flexbox */
-  flex-direction: column; /* Arrange items in a column */
-  align-items: center; /* Center items horizontally */
+/* Form container */
+.form {
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  text-align: center;
 }
 
-label {
-  margin-bottom: 5px;
-  color: #d1006b; /* Darker pink for labels */
+.inputContainer {
+  margin-bottom: 20px;
 }
 
-input {
-  width: 80%; /* Set a width for input fields */
-  padding: 10px;
-  border: 1px solid #ff6f91;
-  border-radius: 5px;
+/* Input label styling */
+.label {
   font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 8px;
+  text-align: left;
 }
 
-input:focus {
-  border-color: #ff6f91;
+/* Input field styling */
+.input {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  color: #333;
+  background-color: #f9f9f9;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #ff4e7d; /* Tinder-like red/pink */
+  background-color: #fff;
   outline: none;
-  box-shadow: 0 0 5px rgba(255, 111, 145, 0.5);
 }
 
-.signup-button {
-  background-color: #ff6f91; /* Button color */
+.input::placeholder {
+  color: #bbb;
+}
+
+/* Sign Up Button */
+.button {
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
   color: white;
-  padding: 10px;
+  background-color: #ff4e7d; /* Tinder-like red/pink */
   border: none;
-  border-radius: 5px;
+  border-radius: 30px;
   cursor: pointer;
-  font-size: 16px;
-  width: 80%; /* Match button width with input fields */
-  margin: 0 auto; /* Center the button */
-  display: block; /* Ensure the button is treated as a block element */
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
 }
 
-.signup-button:hover {
-  background-color: #ff4e7b; /* Darker pink on hover */
+.button:hover {
+  background-color: #ff3b64; /* Darker red/pink on hover */
 }
 
+/* Message displayed if there's an error or info */
 .message {
+  color: #e41e7f;
+  font-size: 14px;
+  margin-top: 20px;
   text-align: center;
-  color: #d1006b; /* Message color */
+}
+
+/* Link to Sign Up page (if needed for navigation) */
+.buttonContainer {
   margin-top: 10px;
+}
+
+.buttonContainer .button {
+  background-color: #4e8cff; /* Blue for 'Sign Up' */
+  margin-top: 20px;
+}
+
+.buttonContainer .button:hover {
+  background-color: #3b7bd6; /* Darker blue on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .header {
+    font-size: 28px;
+  }
+
+  .form {
+    width: 90%;
+  }
 }

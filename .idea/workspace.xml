@@ -6,27 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="f7616126-f1ae-4d93-a733-222e3669216f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/linkup-react/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/linkup-react/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/linkup-react/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/linkup-react/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/linkup-react/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/linkup-react/src/App.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/linkup-react/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/linkup-react/src/App.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/linkup.db" beforeDir="false" afterPath="$PROJECT_DIR$/linkup.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/1eb85664-ede2-4c29-95d8-2c4359defde3.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/323a5457-a863-43a2-9600-d9915994644a.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/3d-illustration-heart-red-background-valentine-s-day.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/3d-rendering-image-illustration-empty-space-podium-display-product-mockup-natural-background.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/430ccc73-a830-41e0-9793-a883a03839d6.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/64864af4-b298-4e70-acf7-32069bbe660e.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/64a50cdc-c31d-4b45-be11-429d43cbe484.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/79F0A129-E48F-4DE9-98A7-3C0D597CDFE8.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/99d4bffb-db10-48f8-a83b-db009623cf6c.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/animerainbow4upscale.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/b2414dd6-26aa-4f39-b07a-e92c606dd872.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/brunette-beautiful-woman-removing-her-eye-makeup-with-lotion-cotton-pad_171337-546.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/d6028524-ddc2-483c-a3b1-4cbb05d8de1c.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/d7478c8d-07eb-4599-92bf-9690c52f1025.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/ef587df6-b6ea-43ec-8bd4-d569640dbac3.jpeg" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

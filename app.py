@@ -2,8 +2,6 @@ from flask import Flask, request, jsonify, send_from_directory, make_response
 from flask_cors import CORS
 import jwt
 import bcrypt
-import base64
-import hashlib
 import sqlite3
 import datetime
 import uuid

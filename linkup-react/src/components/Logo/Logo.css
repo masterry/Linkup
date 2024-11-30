@@ -1,0 +1,6 @@
+/* Logo.css or HomePage.css */
+header img.logo {
+  width: 220px;  /* Adjust the size of the logo */
+  height: auto;  /* Maintain aspect ratio */
+  margin-left: 20px;  /* Adjust the spacing on the left */
+}

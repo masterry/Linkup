@@ -10,6 +10,7 @@ import Navbar from './components/Navbar/Navbar';
 import Profile from './components/Profile/Profile';
 import ChatHistory from './components/chathistory/chatHistory';
 import InitiateChat from './components/InitiateChat/initiateChat';
+import ChatApp from './pages/ChatApp/chatApp';  // Import the ChatApp component
 import { useEffect, useState } from 'react';
 import useLocationUpdater from './hooks/useLocationUpdater'; // Import the custom hook
 
@@ -35,6 +36,7 @@ function MainApp() {
         <Route path="/initiatechat" element={<InitiateChat userID={userID} />} />
         <Route path="/chathistory/:userID" element={<ChatHistory userID={userID} />} />
         <Route path="/profile/:userID" element={<Profile userID={userID} />} />
+        <Route path="/chatapp/:userID" element={<ChatApp />} /> {/* Add route for ChatApp */}
       </Routes>
     </>
   );

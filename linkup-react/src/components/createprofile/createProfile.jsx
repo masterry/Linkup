@@ -12,9 +12,9 @@ const CreateProfile = () => {
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
     const [gender, setGender] = useState('');
-    const [location, setLocation] = useState(null); // Start with null, no default location
+    const [location, setLocation] = useState(null);
     const [bio, setBio] = useState('');
-    const [profilePicture, setProfilePicture] = useState(null); // Set this as file, not string
+    const [profilePicture, setProfilePicture] = useState(null);
     const [message, setMessage] = useState('');
 
     // Initialize Leaflet icon
@@ -27,19 +27,18 @@ const CreateProfile = () => {
         });
     }, []);
 
-    // Function to get user location
     const getLocation = () => {
-        console.log("Attempting to get location..."); // Debug log
+        console.log("Attempting to get location...");
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
-                    console.log(`Location retrieved: ${latitude}, ${longitude}`); // Debug log
+                    console.log(`Location retrieved: ${latitude}, ${longitude}`);
                     setLocation([latitude, longitude]);
                 },
                 (error) => {
                     console.error("Error obtaining location:", error);
-                    alert("Unable to retrieve your location. Please ensure location services are enabled and try again.");
+                    alert("Unable to retrieve your location. Please ensure location services are enabled.");
                 }
             );
         } else {
@@ -48,7 +47,7 @@ const CreateProfile = () => {
     };
 
     useEffect(() => {
-        getLocation(); // Call the function to get location
+        getLocation();
     }, []);
 
     const handleSubmit = async (e) => {
@@ -63,21 +62,16 @@ const CreateProfile = () => {
         formData.append('name', name);
         formData.append('age', age);
         formData.append('gender', gender);
-        formData.append('location', JSON.stringify(location)); // Ensure location is a stringified array
+        formData.append('location', JSON.stringify(location)); 
         formData.append('bio', bio);
 
         if (profilePicture) {
             formData.append('profilePicture', profilePicture);
         }
 
-        // Log the data being sent to see if it’s correct
-        console.log('FormData:', formData);
-
         try {
             const response = await axios.put(`http://127.0.0.1:5000/api/usersprofile/${userID}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
             setMessage(response.data.message);
             navigate(`/userpreferences/${userID}`);
@@ -85,48 +79,49 @@ const CreateProfile = () => {
             console.error('Error during create:', error.response ? error.response.data : error.message);
         }
     };
-    
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setProfilePicture(file);  // Store file itself
+            setProfilePicture(file);
         }
     };
 
     return (
-        <div className="signup-container">
+        <div className="container">
             <h2>Create Profile</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="input-group">
-                    <label>Name:</label>
+            <form onSubmit={handleSubmit} className="form">
+                <div className="input-container">
+                    <label className="label">Name:</label>
                     <input
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
+                        className="input"
                     />
                 </div>
-                <div className="input-group">
-                    <label>Age:</label>
+                <div className="input-container">
+                    <label className="label">Age:</label>
                     <input
                         type="number"
                         value={age}
                         onChange={(e) => setAge(e.target.value)}
                         required
+                        className="input"
                     />
                 </div>
-                <div className="input-group">
-                    <label>Gender:</label>
-                    <select value={gender} onChange={(e) => setGender(e.target.value)} required>
+                <div className="input-container">
+                    <label className="label">Gender:</label>
+                    <select value={gender} onChange={(e) => setGender(e.target.value)} required className="input">
                         <option value="">Select</option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                         <option value="other">Other</option>
                     </select>
                 </div>
-                <div className="input-group">
-                    <label>Location:</label>
+                <div className="input-container">
+                    <label className="label">Location:</label>
                     {location ? (
                         <MapContainer center={location} zoom={13} style={{ height: '300px', width: '100%' }}>
                             <TileLayer
@@ -134,33 +129,32 @@ const CreateProfile = () => {
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             />
                             <Marker position={location}>
-                                <Popup>
-                                    You are here!
-                                </Popup>
+                                <Popup>You are here!</Popup>
                             </Marker>
                         </MapContainer>
                     ) : (
                         <p>Getting your location...</p>
                     )}
                 </div>
-                <div className="input-group">
-                    <label>Bio:</label>
+                <div className="input-container">
+                    <label className="label">Bio:</label>
                     <textarea
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
-                        style={{ width: '80%', padding: '10px', border: '1px solid #ff6f91', borderRadius: '5px', fontSize: '16px' }}
+                        className="textarea"
                     />
                 </div>
-                <div className="input-group">
-                    <label>Profile Picture:</label>
+                <div className="input-container">
+                    <label className="label">Profile Picture:</label>
                     <input
                         type="file"
                         accept="image/*"
                         onChange={handleImageChange}
+                        className="input"
                     />
                 </div>
-                {profilePicture && <img src={URL.createObjectURL(profilePicture)} alt="Profile Preview" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />}
-                <button type="submit" className="signup-button">Create Profile</button>
+                {profilePicture && <img src={URL.createObjectURL(profilePicture)} alt="Profile Preview" className="preview-img" />}
+                <button type="submit" className="button">Create Profile</button>
             </form>
             {message && <p className="message">{message}</p>}
         </div>

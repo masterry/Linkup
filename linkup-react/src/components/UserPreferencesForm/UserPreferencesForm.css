@@ -1,76 +1,110 @@
-.signup-container {
-  background-color: rgba(248, 209, 224, 0.8); /* Light pink with some transparency */
-  padding: 20px;
-  border-radius: 10px; /* Adjusted border radius */
-  max-width: 400px; /* Match max width */
-  width: 150%; /* Ensure it fits within the available width */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Added box shadow */
-  margin-top: -200px;
-}
-
-h2 {
-  color: #ff6f91; /* Pink for the heading */
-  text-align: center;
-}
-
-.input-group {
-  margin-bottom: 15px;
-  display: flex; /* Use flexbox */
-  flex-direction: column; /* Arrange items in a column */
-  align-items: center; /* Center items horizontally */
-}
-
-label {
-  margin-bottom: 5px;
-  color: #d1006b; /* Darker pink for labels */
-}
-
-input,
-select {
-  width: 100%; /* Set width to 100% to ensure all inputs are the same size */
-  padding: 10px;
-  border: 1px solid #ff6f91;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-input:focus,
-select:focus {
-  border-color: #ff6f91;
-  outline: none;
-  box-shadow: 0 0 5px rgba(255, 111, 145, 0.5);
-}
-
-.signup-button {
-  background-color: #ff6f91; /* Button color */
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  width: 100%; /* Match button width with input fields */
-  margin: 0 auto; /* Center the button */
-  display: block; /* Ensure the button is treated as a block element */
-}
-
-.signup-button:hover {
-  background-color: #ff4e7b; /* Darker pink on hover */
-}
-
-.message {
-  text-align: center;
-  color: #d1006b; /* Message color */
-  margin-top: 10px;
-}
-
-.distance-container {
+/* General Styles for User Preferences Page */
+.containerr {
   display: flex;
-  flex-direction: column; /* Stack label and input vertically */
-  align-items: center; /* Center items horizontally */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  min-height: 100vh;
+  padding: 40px;
+  box-sizing: border-box;
 }
 
+/* Heading styling */
+h2 {
+  font-size: 36px;
+  color: #fa3872; /* Tinder-like red/pink */
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* Logo Header for the User Preferences page */
+.preferences-header {
+  position: absolute; /* Position the logo on top-left */
+  top: 20px; /* Adjust the distance from the top of the page */
+  left: 20px; /* Adjust the distance from the left side */
+  z-index: 10; /* Ensure the logo stays above other content */
+}
+
+/* Form container */
+.form {
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* Input container */
+.input-container {
+  margin-bottom: 20px;
+}
+
+.label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.input {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  color: #333;
+  background-color: #f9f9f9;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #ff4e7d; /* Tinder-like red/pink */
+  background-color: #fff;
+  outline: none;
+}
+
+/* Specific styles for distance input */
 .distance-input {
-  width: 80px; /* Adjust this value as needed */
-  margin-top: 5px; /* Space between label and input */
+  width: 100%;
+}
+
+.button {
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
+  color: white;
+  background-color: #ff4e7d; /* Tinder-like red/pink */
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.button:hover {
+  background-color: #ff3b64; /* Darker red/pink on hover */
+}
+
+/* Message (if applicable) */
+.message {
+  color: #e41e7f;
+  font-size: 14px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .form {
+    width: 90%;
+  }
+
+  h2 {
+    font-size: 28px;
+  }
 }

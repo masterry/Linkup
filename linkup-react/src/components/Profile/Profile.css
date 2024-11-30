@@ -1,15 +1,63 @@
+/* Profile.css */
+
+/* Overall profile page container */
+.profile-page {
+  text-align: center; /* Center text and elements inside the page */
+}
+
+/* Profile header for Logo */
+.profile-header {
+  position: absolute; /* Position the logo on top */
+  top: 20px; /* Adjust the distance from the top of the page */
+  left: 20px; /* Adjust the distance from the left side */
+  z-index: 10; /* Make sure the logo appears above other content */
+}
+
+/* Profile container styling */
 .profile-container {
-  background-color: rgba(248, 209, 224, 0.8); /* Light pink background */
+  background-color: white; /* Light pink background */
   padding: 20px;
   border-radius: 10px;
   max-width: 400px;
   margin: 20px auto; /* Center the profile */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center; /* Center text */
+  margin-top: 150px;  /* Adjust top margin to push down the profile container */
 }
 
+/* Profile picture styling */
 .profile-picture {
   width: 100%; /* Make picture responsive */
   height: auto;
-  border-radius: 50%; /* Circular profile picture */
+  border-radius: 5%; /* Circular profile picture */
+}
+
+/* Edit button styling */
+.edit-button {
+  background-color: #ff4e7d; /* Corrected background color hex */
+  color: white; /* Text color */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.edit-button:disabled {
+  background-color: #ddd; /* Light gray when disabled */
+  cursor: not-allowed;
+}
+
+/* General styling for profile content */
+.profile-container p {
+  font-size: 16px;
+  color: #333;
+  margin: 5px 0;
+}
+
+.profile-container h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
 }

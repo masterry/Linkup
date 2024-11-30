@@ -1,90 +1,119 @@
-body {
-  display: flex; /* Use flexbox */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  background-image: url('/src/assets/images/linkup.jpg'); /* Path to your background image */
-  background-size: cover; /* Cover the entire page */
-  background-position: center; /* Center the background image */
-  background-repeat: no-repeat; /* Prevent the background from repeating */
-  margin: 0; /* Remove default margin */
-  height: 100vh; /* Full viewport height */
-}
-
+/* General Styles for SignIn Page */
 .container {
-  background-color: rgba(248, 209, 224, 0.8); /* Light pink with some transparency */
-  padding: 20px;
-  border-radius: 10px; /* Adjusted border radius */
-  max-width: 400px; /* Match max width */
-  width: 150%; /* Ensure it fits within the available width */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Added box shadow */
-  margin-top: -200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px;
+  box-sizing: border-box;
+  background-image: url('/src/assets/images/IMG_7361.JPG');
+  background-size: cover; /* Cover the entire page */
+  background-position: center;
 }
 
+/* Header Styling */
 .header {
-  background-color: rgba(248, 209, 224, 0.8); /* Light pink with some transparency */
-  padding: 20px;
-  border-radius: 10px; /* Adjusted border radius */
-  max-width: 400px; /* Match max width */
-  margin: auto; /* Center the container */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Added box shadow */
+  font-size: 36px;
+  color: #f9f1f1;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
 }
 
+/* Form container */
 .form {
   width: 100%;
+  max-width: 400px;
+  background-color: white;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  text-align: center;
 }
 
 .inputContainer {
-  margin-bottom: 15px;
-  display: flex; /* Use flexbox */
-  flex-direction: column; /* Arrange items in a column */
-  align-items: center; /* Center items horizontally */
+  margin-bottom: 20px;
 }
 
+/* Input label styling */
 .label {
-  margin-bottom: 5px;
-  color: #d1006b; /* Darker pink for labels */
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 8px;
+  text-align: left;
 }
 
+/* Input field styling */
 .input {
-  width: 80%; /* Set a width for input fields */
-  padding: 10px;
-  border: 1px solid #ff6f91; /* Light pink border */
-  border-radius: 5px; /* Slightly rounded input */
-  font-size: 16px; /* Font size */
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  color: #333;
+  background-color: #f9f9f9;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
 }
 
 .input:focus {
-  border-color: #ff6f91; /* Keep border color on focus */
+  border-color: #ff4e7d; /* Tinder-like red/pink */
+  background-color: #fff;
   outline: none;
-  box-shadow: 0 0 5px rgba(255, 111, 145, 0.5); /* Add shadow on focus */
 }
 
+.input::placeholder {
+  color: #bbb;
+}
+
+/* Sign In Button */
 .button {
-  background-color: #ff6f91; /* Button color */
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
   color: white;
-  padding: 10px;
+  background-color: #ff4e7d; /* Tinder-like red/pink */
   border: none;
-  border-radius: 5px;
+  border-radius: 30px;
   cursor: pointer;
-  font-size: 16px;
-  width: 80%; /* Match button width with input fields */
-  margin: 0 auto; /* Center the button */
-  display: block; /* Ensure the button is treated as a block element */
-  margin-top: 10px; /* Space between buttons */
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
 }
 
 .button:hover {
-  background-color: #ff4e7b; /* Darker pink on hover */
+  background-color: #ff3b64; /* Darker red/pink on hover */
 }
 
+/* Message displayed if there's an error or info */
 .message {
+  color: #e41e7f;
+  font-size: 14px;
+  margin-top: 20px;
   text-align: center;
-  color: #d1006b; /* Message color */
+}
+
+/* Link to Sign Up page */
+.buttonContainer {
   margin-top: 10px;
 }
 
-.buttonContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.buttonContainer .button {
+  background-color: #0b63e1; /* Blue for 'Sign Up' */
+  margin-top: 20px;
+}
+
+.buttonContainer .button:hover {
+  background-color: #3b7bd6; /* Darker blue on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .header {
+    font-size: 28px;
+  }
+
+  .form {
+    width: 90%;
+  }
 }

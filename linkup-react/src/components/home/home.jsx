@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useParams, useNavigate } from 'react-router-dom';
 import './HomePage.css';
+import Logo from '../Logo/Logo';  // Import the Logo component
 
 const HomePage = () => {
   const { userID } = useParams();
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const [matches, setMatches] = useState([]);
   const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
   const [error, setError] = useState(null);
@@ -96,7 +97,6 @@ const HomePage = () => {
     });
     setMatchPopup(false);
   };
-  
 
   const keepSwiping = () => {
     setMatchPopup(false);
@@ -105,10 +105,10 @@ const HomePage = () => {
   return (
     <div className="home-page">
       <header className="header">
-        <h1>Linkup</h1>
+        <Logo />  {/* Use the Logo component here */}
         <button className="login-button">Edit Profile</button>
       </header>
-      
+
       <main className="profile-cards">
         {error && <p className="error-message">Error: {error}</p>} 
         {noMoreMatches && <p>No more potential matches around you.</p>} 
@@ -142,7 +142,7 @@ const HomePage = () => {
           <button onClick={keepSwiping}>Keep Swiping</button>
         </div>
       )}
-      
+
       <footer className="footer">
         <p>&copy; 2024 Linkup</p>
       </footer>

@@ -28,28 +28,32 @@ const SignUp = () => {
     };
 
     return (
-        <div className="signup-container">
-            <h2>Sign Up</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="input-group">
-                    <label>Email:</label>
+        <div className="container">
+            <header className="header">
+                <h2 className='header'>Sign Up</h2>
+            </header>
+            <form onSubmit={handleSubmit} className="form">
+                <div className="inputContainer">
+                    <label className="label">Email:</label>
                     <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        className="input"
                     />
                 </div>
-                <div className="input-group">
-                    <label>Password:</label>
+                <div className="inputContainer">
+                    <label className="label">Password:</label>
                     <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        className="input"
                     />
                 </div>
-                <button type="submit" className="signup-button">Sign Up</button>
+                <button type="submit" className="button">Sign Up</button>
             </form>
             {message && <p className="message">{message}</p>}
         </div>

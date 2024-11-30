@@ -1,0 +1,62 @@
+/* chatApp.css */
+.chat-app-container {
+  display: flex;
+  height: 100vh;
+}
+
+.chat-sidebar {
+  width: 300px;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  background-color: #f1f1f1;
+}
+
+.chat-main {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.chat-history-container {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.messages-header {
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-bottom: 1px solid #ddd;
+}
+
+.messages-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.messages-footer {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.messages-list {
+  margin-bottom: 10px;
+}
+
+.message {
+  margin-bottom: 5px;
+}
+
+.sent {
+  text-align: right;
+}
+
+.received {
+  text-align: left;
+}
