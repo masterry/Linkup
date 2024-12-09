@@ -1,14 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './messages.css';
 
-const Messages = () => {
-  const location = useLocation();
-  const query = new URLSearchParams(location.search);
-  const sender = query.get('sender');
-  const recipient = query.get('recipient');
-
+const Messages = ({ sender, recipient }) => {
   const [messages, setMessages] = useState([]);
   const [recipientName, setRecipientName] = useState('');
   const [messageContent, setMessageContent] = useState('');
@@ -23,27 +17,28 @@ const Messages = () => {
           params: { sender, recipient },
         });
         setMessages(response.data);
-        
-        // Set recipient name based on recipient value in URL and response
+
         if (response.data.length > 0) {
           const message = response.data[0];
-          if (message.recipient == recipient) {
-            setRecipientName(message.recipient_name);  // Use recipient_name if recipient matches
+          if (message.recipient === recipient) {
+            setRecipientName(message.recipient_name);
           } else {
-            setRecipientName(message.sender_name);  // Otherwise use sender_name
+            setRecipientName(message.sender_name);
           }
         }
       } catch (error) {
-        console.error("Error fetching messages:", error);
+        console.error('Error fetching messages:', error);
         setError(error.message);
       }
     };
 
-    fetchMessages();
+    if (sender && recipient) {
+      fetchMessages();
+    }
   }, [sender, recipient]);
 
   const handleSendMessage = async () => {
-    if (!messageContent.trim()) return;   
+    if (!messageContent.trim()) return;
 
     const payload = {
       sender,
@@ -59,7 +54,7 @@ const Messages = () => {
       });
       setMessages(response.data);
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error('Error sending message:', error);
       setError(error.message);
     }
   };
@@ -71,7 +66,7 @@ const Messages = () => {
   return (
     <div className="messages-container">
       <header className="messages-header">
-        <h2>Chat with {recipientName || recipient}</h2> {/* Display recipient_name or fallback to recipient */}
+        <h2>Chat with {recipientName || recipient}</h2>
       </header>
       <main className="messages-content">
         {error && <p className="error-message">Error: {error}</p>}

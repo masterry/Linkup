@@ -1,0 +1,122 @@
+.chat-app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.chat-app-content {
+  display: flex;
+  flex: 1;
+}
+
+.left-panel {
+  width: 300px;
+  padding: 10px;
+  border-right: 1px solid #ccc;
+  overflow-y: auto;
+}
+
+.right-panel {
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.empty-chat {
+  color: #888;
+  text-align: center;
+}
+
+.chat-history-container {
+  padding: 10px;
+  margin-top: 40px;
+}
+
+.chat-item {
+  cursor: pointer;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.chat-item:hover {
+  background-color: #f4f4f4;
+}
+
+.chat-info {
+  flex: 1;
+}
+
+.chat-user-name {
+  font-weight: bold;
+}
+
+.last-message {
+  color: #888;
+}
+
+.chat-timestamp {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.messages-header h2 {
+  font-size: 1.5rem;
+}
+
+.messages-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.message {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.sent {
+  background-color: #e59a9a;
+  align-self: flex-end;
+}
+
+.received {
+  background-color: #9ba0ea;
+}
+
+.messages-footer {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.messages-footer input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.messages-footer button {
+  margin-left: 10px;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.messages-footer button:hover {
+  background-color: #45a049;
+}

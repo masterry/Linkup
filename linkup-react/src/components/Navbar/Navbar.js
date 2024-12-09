@@ -17,7 +17,7 @@ const Navbar = ({ userID }) => {
                     <Link to={`/userpreferences/${userID}`}><i className="fa fa-cogs"></i></Link> {/* Preferences Icon */}
                 </li>
                 <li>
-                    <Link to={`/chatapp/${userID}`}><i className="fa fa-comment"></i></Link> {/* Messages Icon */}
+                    <Link to={`/chat/${userID}`}><i className="fa fa-comment"></i></Link> {/* Messages Icon */}
                 </li>
             </ul>
         </nav>

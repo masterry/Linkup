@@ -1,5 +1,5 @@
-/* General Navbar Styles */
-nav {
+/* General Navbar Styles (for other pages) */
+nav:not(.landing-page-navbar) {
   background-image: linear-gradient(to right, #f52988, #ff8f7b); /* Gradient from #f52988 to #ff8f7b */
   padding: 15px 20px; /* Increased top/bottom padding for thickness */
   position: fixed;
