@@ -22,12 +22,12 @@ Jinja2==3.1.2
 jsonpointer==2.1
 MarkupSafe==2.0.1
 munkres==1.1.4
-numpy==2.0.2
+numpy==1.24.2
 openpyxl==3.0.10
 packaging==21.3
 parso==0.8.3
 patsy==0.5.1
-Pillow==8.5.0
+Pillow==9.4.0
 platformdirs==2.5.0
 pluggy==1.0.0
 ply==3.11
