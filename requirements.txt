@@ -44,7 +44,7 @@ python-lsp-jsonrpc==1.0.0
 python-lsp-server==1.2.0
 six==1.16.0
 SQLAlchemy==2.0.16
-typing_extensions==3.10.0
+typing-extensions==4.2.0
 ujson==5.1.0
 urllib3==1.26.6
 virtualenv==20.26.2
