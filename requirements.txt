@@ -22,7 +22,7 @@ Jinja2==3.1.2
 jsonpointer==2.1
 MarkupSafe==2.0.1
 munkres==1.1.4
-numpy==1.21.2
+numpy==2.0.2
 openpyxl==3.0.10
 packaging==21.3
 parso==0.8.3
