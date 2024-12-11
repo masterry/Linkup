@@ -30,7 +30,7 @@ const SignUp = () => {
     return (
         <div className="container">
             <header className="header">
-                <h2 className='header'>Sign Up</h2>
+                <h2 className='header'>Sign Up To Linkup</h2>
             </header>
             <form onSubmit={handleSubmit} className="form">
                 <div className="inputContainer">

@@ -114,14 +114,9 @@ class NotificationService:
 
 
 def get_db_connection():
-    conn = sqlite3.connect('linkup.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
-# Database connection function
-def get_db_connection():
-    conn = sqlite3.connect('linkup.db')
+    # Use environment variable for the path if it exists, otherwise fall back to the default location
+    database_path = os.getenv('DATABASE_URL', os.path.join(app.root_path, 'linkup.db'))
+    conn = sqlite3.connect(database_path)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -131,6 +126,18 @@ def hash_password(password):
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_password
+
+
+@app.route('/<path:path>')
+def serve_static(path):
+    # Adjust this to the path where the React build is located
+    return send_from_directory(os.path.join(app.root_path, 'build'), path)
+
+@app.route('/')
+def index():
+    # Serve the React app's index.html
+    return send_from_directory(os.path.join(app.root_path, 'build'), 'index.html')
+
 
 @app.route('/signup', methods=['POST'])
 def signup():
