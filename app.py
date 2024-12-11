@@ -128,14 +128,14 @@ def hash_password(password):
     return hashed_password
 
 
-@app.route('/<path:path>')
+@app.route('/static/<path:path>')
 def serve_static(path):
-    # Adjust this to the path where the React build is located
-    return send_from_directory(os.path.join(app.root_path, 'build'), path)
+    return send_from_directory(os.path.join(app.root_path, 'build/static'), path)
 
+# Route to serve the index.html of the React app
 @app.route('/')
 def index():
-    return send_from_directory(app.static_folder, 'index.html')
+    return send_from_directory(os.path.join(app.root_path, 'build'), 'index.html')
 
 
 @app.route('/signup', methods=['POST'])
