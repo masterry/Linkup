@@ -12,7 +12,7 @@ import os
 import json
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='build/static', static_url_path='/static')
 CORS(app)
 app.config['SECRET_KEY'] = 'your_secret_key'
 
@@ -135,8 +135,7 @@ def serve_static(path):
 
 @app.route('/')
 def index():
-    # Serve the React app's index.html
-    return send_from_directory(os.path.join(app.root_path, 'build'), 'index.html')
+    return send_from_directory(app.static_folder, 'index.html')
 
 
 @app.route('/signup', methods=['POST'])
