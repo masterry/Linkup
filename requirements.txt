@@ -43,7 +43,7 @@ PyQtWebEngine==5.15.6
 python-lsp-jsonrpc==1.0.0
 python-lsp-server==1.2.0
 six==1.16.0
-SQLAlchemy==1.4.27
+SQLAlchemy==2.0.16
 typing_extensions==3.10.0
 ujson==5.1.0
 urllib3==1.26.6
