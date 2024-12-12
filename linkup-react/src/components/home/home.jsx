@@ -17,7 +17,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/api/matches/${userID}`);
+        const response = await axios.get(`https://linkup-dating-2e181815b60e.herokuapp.com/api/matches/${userID}`);
         console.log("API Response:", response.data);
         setMatches(response.data);
       } catch (error) {
@@ -43,7 +43,7 @@ const HomePage = () => {
     };
 
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/swipes', payload);
+      const response = await axios.post('https://linkup-dating-2e181815b60e.herokuapp.com/api/swipes', payload);
       console.log(`Swiped ${direction} on:`, matches[currentMatchIndex].name);
 
       if (response.data.matchID) {
@@ -117,7 +117,7 @@ const HomePage = () => {
           <div className={`card ${swipeDirection}`}>
             {matches[currentMatchIndex] && matches[currentMatchIndex].profilePicture ? (
               <img 
-                src={`http://127.0.0.1:5000/${matches[currentMatchIndex].profilePicture}`} 
+                src={`https://linkup-dating-2e181815b60e.herokuapp.com/${matches[currentMatchIndex].profilePicture}`} 
                 alt="Profile" 
                 className="profile-picture" 
               />
