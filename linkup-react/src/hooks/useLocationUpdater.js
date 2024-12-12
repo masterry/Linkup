@@ -9,7 +9,7 @@ const useLocationUpdater = (userID, currentLocation) => {
         const locationData = `[${lat}, ${long}]`; // Format location as string
 
         // Send location to the backend API
-        axios.post(`http://127.0.0.1:5000/update_location/${userID}`, { location: locationData })
+        axios.post(`https://linkup-dating-2e181815b60e.herokuapp.com/update_location/${userID}`, { location: locationData })
           .then(response => {
             console.log('Location updated successfully:', response.data);
           })
