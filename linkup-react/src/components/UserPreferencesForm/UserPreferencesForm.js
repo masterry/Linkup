@@ -23,7 +23,7 @@ const UserPreferencesForm = () => {
     };
 
     try {
-      const response = await axios.put(`http://127.0.0.1:5000/api/user/preferences/${userID}`, preferencesData, {
+      const response = await axios.put(`https://linkup-dating-2e181815b60e.herokuapp.com/api/user/preferences/${userID}`, preferencesData, {
         headers: {
           'Content-Type': 'application/json',
         },

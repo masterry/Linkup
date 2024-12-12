@@ -70,7 +70,7 @@ const CreateProfile = () => {
         }
 
         try {
-            const response = await axios.put(`http://127.0.0.1:5000/api/usersprofile/${userID}`, formData, {
+            const response = await axios.put(`https://linkup-dating-2e181815b60e.herokuapp.com/api/usersprofile/${userID}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             setMessage(response.data.message);

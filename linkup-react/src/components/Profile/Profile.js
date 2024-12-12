@@ -14,7 +14,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`http://127.0.0.1:5000/api/users/${userID}`);
+                const response = await axios.get(`https://linkup-dating-2e181815b60e.herokuapp.com/api/users/${userID}`);
                 setUserData(response.data);
             } catch (err) {
                 console.error('Error fetching user data:', err);
@@ -36,7 +36,7 @@ const Profile = () => {
         formData.append('file', newProfilePicture);
 
         try {
-            const response = await axios.put(`http://127.0.0.1:5000/api/userprofile/${userID}/profile-picture`, formData, {
+            const response = await axios.put(`https://linkup-dating-2e181815b60e.herokuapp.com/api/userprofile/${userID}/profile-picture`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
@@ -55,7 +55,7 @@ const Profile = () => {
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
 
-    const profileImageUrl = `http://127.0.0.1:5000/${userData.profilePicture}`;
+    const profileImageUrl = `https://linkup-dating-2e181815b60e.herokuapp.com/${userData.profilePicture}`;
 
     return (
         <div className="profile-page">

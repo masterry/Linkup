@@ -9,7 +9,7 @@ const ChatHistory = ({ onChatClick }) => {
   useEffect(() => {
     const fetchChatHistory = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/get_user_chat_history/${userID}`);
+        const response = await fetch(`https://linkup-dating-2e181815b60e.herokuapp.com/get_user_chat_history/${userID}`);
         const data = await response.json();
         setChatHistory(data);
       } catch (error) {

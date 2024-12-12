@@ -13,7 +13,7 @@ const Messages = ({ sender, recipient }) => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/get_messages', {
+        const response = await axios.get('https://linkup-dating-2e181815b60e.herokuapp.com/get_messages', {
           params: { sender, recipient },
         });
         setMessages(response.data);
@@ -47,9 +47,9 @@ const Messages = ({ sender, recipient }) => {
     };
 
     try {
-      await axios.post('http://127.0.0.1:5000/send_message', payload);
+      await axios.post('https://linkup-dating-2e181815b60e.herokuapp.com/send_message', payload);
       setMessageContent('');
-      const response = await axios.get('http://127.0.0.1:5000/get_messages', {
+      const response = await axios.get('https://linkup-dating-2e181815b60e.herokuapp.com/get_messages', {
         params: { sender, recipient },
       });
       setMessages(response.data);

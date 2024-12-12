@@ -13,7 +13,7 @@ const SignUp = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://127.0.0.1:5000/signup', {
+            const response = await axios.post('https://linkup-dating-2e181815b60e.herokuapp.com/signup', {
                 email,
                 password,
             });
